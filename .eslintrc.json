@@ -18,6 +18,8 @@
     "react/jsx-one-expression-per-line": "off",
     "comma-dangle": 0,
     "prettier/prettier": "error",
-    "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }]
+    "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
+    "linebreak-style": [0, "unix"],
+    "no-underscore-dangle": 0
   }
 }
