@@ -1,10 +1,8 @@
 import React from 'react'
-import MovieService from '../MovieService'
-import CardFilm from '../CardFilm'
+// import MovieService from '../MovieService'
+import ListFilm from '../ListFilm'
 
 export default class App extends React.Component {
-  movieServices = new MovieService()
-
   constructor(props) {
     super(props)
     this.state = {
@@ -25,12 +23,10 @@ export default class App extends React.Component {
 
   render() {
     const { text } = this.state
-    const film = this.movieServices.getDetail(550).object
     return (
       <div className="text">
-        <CardFilm />
+        <ListFilm />
         <span>{text}</span>
-        <span>{film}</span>
       </div>
     )
   }
