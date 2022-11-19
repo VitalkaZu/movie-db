@@ -20,6 +20,7 @@
     "prettier/prettier": "error",
     "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
     "linebreak-style": [0, "unix"],
+    "operator-linebreak": ["error", "after"],
     "no-underscore-dangle": 0
   }
 }

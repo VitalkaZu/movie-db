@@ -4,12 +4,13 @@ import {
   EllipsisOutlined,
   SettingOutlined,
 } from '@ant-design/icons'
-import { Avatar, Card, Tag, Rate } from 'antd'
+import { Avatar, Card, Tag, Rate, Typography } from 'antd'
 import React from 'react'
-
 import PropTypes from 'prop-types'
+// import EllipsisMiddle from '../EllipsisMiddle'
 import MovieService from '../MovieService'
 
+const { Paragraph } = Typography
 const { Meta } = Card
 
 export default class CardFilm extends React.Component {
@@ -23,6 +24,7 @@ export default class CardFilm extends React.Component {
       posterPath: null,
       genres: null,
       voteAverage: null,
+      overview: null,
     }
     this.downloadFilmInfo(props.id)
   }
@@ -35,6 +37,7 @@ export default class CardFilm extends React.Component {
         posterPath: `https://image.tmdb.org/t/p/w300_and_h450_bestv2/${film.poster_path}`,
         genres: film.genres,
         voteAverage: film.vote_average,
+        overview: film.overview,
       }))
     })
     // await this.MovieService.getKeywords(id).then((keywords) => {
@@ -56,7 +59,8 @@ export default class CardFilm extends React.Component {
   // <img alt="Poster film" src={posterPath} />
   // </li>
   render() {
-    const { title, releaseDate, posterPath, genres, voteAverage } = this.state
+    const { title, releaseDate, posterPath, genres, voteAverage, overview } =
+      this.state
     // if (!keywords) {
     //   return null
     // }
@@ -78,7 +82,10 @@ export default class CardFilm extends React.Component {
           description={releaseDate}
         />
         {this.renderKeywords(genres)}
-        <Rate disabled allowHalf defaultValue={voteAverage} />
+        <Rate disabled allowHalf count={10} value={voteAverage} />
+        <Paragraph ellipsis={{ rows: 2, expandable: true, symbol: '...' }}>
+          {String(overview)}
+        </Paragraph>
       </Card>
     )
   }
