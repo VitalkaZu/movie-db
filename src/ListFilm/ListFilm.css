@@ -1,6 +1,8 @@
 .film-list {
+  padding: 36px;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  gap: 20px;
+  column-gap: 36px;
+  row-gap: 32px;
 }

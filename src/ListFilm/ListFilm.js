@@ -1,4 +1,5 @@
 import React from 'react'
+import { Space, Spin } from 'antd'
 import MovieService from '../MovieService'
 import CardFilm from '../CardFilm'
 import './ListFilm.css'
@@ -32,7 +33,13 @@ export default class ListFilm extends React.Component {
   render() {
     const { filmList } = this.state
     if (!filmList) {
-      return null
+      return (
+        <Space size="middle">
+          <Spin size="small" />
+          <Spin />
+          <Spin size="large" />
+        </Space>
+      )
     }
     const items = this.renderFilms(filmList)
     return <ul className="film-list">{items}</ul>
