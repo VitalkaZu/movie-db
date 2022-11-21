@@ -1,30 +1,30 @@
 .card {
-    display: flex;
-    flex-direction: row;
-    width: 454px;
-    height: 281px;
-    box-shadow: 0px 4px 12px rgb(0 0 0 / 15%);
+  display: flex;
+  flex-direction: row;
+  width: 454px;
+  height: 281px;
+  box-shadow: 0px 4px 12px rgb(0 0 0 / 15%);
 }
 
 .card-description {
-    display: flex;
-    flex-direction: column;
-    padding: 12px 20px;
+  display: flex;
+  flex-direction: column;
+  padding: 12px 20px;
 }
 
 .card-rate {
-    font-size: 15px;
+  font-size: 15px;
 }
 
 .card-title {
-    font-weight: 400;
-    font-size: 20px;
-    line-height: 28px;
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 28px;
 }
 
 .card-date {
-    font-weight: 400;
-    font-size: 12px;
-    line-height: 22px;
-    color: #827E7E;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 22px;
+  color: #827e7e;
 }

@@ -9,8 +9,8 @@ export default class App extends React.Component {
     super(props)
     this.state = {
       text: 'FILM',
+      filmList: null,
       searchName: null,
-      search: null,
     }
   }
 
@@ -21,12 +21,19 @@ export default class App extends React.Component {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  onSubmitSearch = (e) => {
+  onSubmitSearch = async (e) => {
     e.preventDefault()
-    this.setState((state) => ({
-      search: state.searchName,
-    }))
-    return null
+    const { searchName } = this.state
+    await this.MovieService.getSearch(searchName).then((listFilm) => {
+      this.setState(() => ({
+        filmList: listFilm,
+      }))
+    })
+    // await this.setState((state) => ({
+    //
+    //   search: state.searchName,
+    // }))
+    // return null
   }
 
   // downloadInfo = (id) => {
@@ -41,7 +48,7 @@ export default class App extends React.Component {
   // eslint-disable-next-line class-methods-use-this
 
   render() {
-    const { text, searchName, search } = this.state
+    const { text, searchName, filmList } = this.state
     return (
       <div className="app">
         <form onSubmit={this.onSubmitSearch}>
@@ -51,7 +58,7 @@ export default class App extends React.Component {
             onChange={this.onChangeSeacrh}
           />
         </form>
-        <ListFilm search={search} />
+        <ListFilm filmList={filmList} />
         <span>{text}</span>
       </div>
     )

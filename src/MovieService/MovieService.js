@@ -28,7 +28,8 @@ export default class MovieService {
     const res = await this.getResource(
       `/movie?${this._apiKey}&language=en-US&query=${query}&page=1&include_adult=false`
     )
-    return res
+    console.log(res.results)
+    return res.results
   }
 
   getKeywords = async (id) => {
