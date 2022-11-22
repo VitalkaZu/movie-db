@@ -4,13 +4,18 @@ export default class MovieService {
   _apiKey = 'api_key=a5bc79536e94cb8671d55c4b9eabb5f9'
 
   async getResource(url) {
-    const res = await fetch(`${this._baseUrl}${url}`, { cache: 'no-store' })
-
-    if (!res.ok) {
-      throw new Error(`Error ${url}, status ${res.status}`)
+    try {
+      console.log('zapros', `${this._baseUrl}${url}`)
+      const res = await fetch(`${this._baseUrl}${url}`)
+      if (!res.ok) {
+        throw new Error(`Error ${url}, status ${res.status}`)
+      }
+      const body = await res.json()
+      return body
+    } catch (e) {
+      alert(e)
+      return false
     }
-    const body = await res.json()
-    return body
   }
 
   getDetail = async (id) => {
@@ -24,12 +29,17 @@ export default class MovieService {
     return res.results
   }
 
-  async getSearch(query) {
-    const res = await this.getResource(
-      `/movie?${this._apiKey}&language=en-US&query=${query}&page=1&include_adult=false`
-    )
-    console.log(res.results)
-    return res.results
+  getSearch = async (query) => {
+    try {
+      const res = await this.getResource(
+        `/search/movie?${this._apiKey}&language=en-US&query=${query}&page=1&include_adult=false`
+      )
+      console.log(res.results)
+      return res.results
+    } catch (e) {
+      alert(e)
+      return false
+    }
   }
 
   getKeywords = async (id) => {

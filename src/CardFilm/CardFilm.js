@@ -53,7 +53,7 @@ export default class CardFilm extends React.Component {
   cutText(text, limit) {
     if (!text) return null
     // const z = this.getLastIndexWithoutIgnore(text, ['!', ',', '.'])
-    console.log(text)
+    // console.log(text)
     const newText = text.slice(0, limit)
     // text.slice(0, z + 1
     return newText

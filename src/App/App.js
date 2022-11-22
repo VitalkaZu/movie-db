@@ -1,39 +1,58 @@
 import React from 'react'
-// import MovieService from '../MovieService'
 import { Input } from 'antd'
+import MovieService from '../MovieService'
 import ListFilm from '../ListFilm'
 import './App2.css'
 
 export default class App extends React.Component {
+  MovieService = new MovieService()
+
   constructor(props) {
     super(props)
     this.state = {
       text: 'FILM',
-      filmList: null,
       searchName: null,
+      filmList: null,
     }
+    this.downloadPopular()
   }
 
-  onChangeSeacrh = (e) => {
+  onChangeSearch = (e) => {
     this.setState({
       searchName: e.target.value,
     })
   }
 
   // eslint-disable-next-line class-methods-use-this
-  onSubmitSearch = async (e) => {
+  onSubmitSearch = (e) => {
     e.preventDefault()
     const { searchName } = this.state
-    await this.MovieService.getSearch(searchName).then((listFilm) => {
-      this.setState(() => ({
-        filmList: listFilm,
-      }))
-    })
+    if (searchName) {
+      // console.log(searchName)
+      this.MovieService.getSearch(searchName)
+        .then((listFilm) => {
+          console.log(listFilm)
+          this.setState(() => ({
+            filmList: listFilm,
+          }))
+        })
+        .catch((error) => alert(error))
+    } else {
+      this.downloadPopular()
+    }
     // await this.setState((state) => ({
     //
     //   search: state.searchName,
     // }))
     // return null
+  }
+
+  async downloadPopular() {
+    await this.MovieService.getPopular().then((filmList) => {
+      this.setState(() => ({
+        filmList,
+      }))
+    })
   }
 
   // downloadInfo = (id) => {
@@ -55,7 +74,7 @@ export default class App extends React.Component {
           <Input
             placeholder="Type to search..."
             value={searchName}
-            onChange={this.onChangeSeacrh}
+            onChange={this.onChangeSearch}
           />
         </form>
         <ListFilm filmList={filmList} />
