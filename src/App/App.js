@@ -1,5 +1,5 @@
 import React from 'react'
-import { Input } from 'antd'
+import { Input, Menu, Pagination } from 'antd'
 import MovieService from '../MovieService'
 import ListFilm from '../ListFilm'
 import './App2.css'
@@ -13,8 +13,10 @@ export default class App extends React.Component {
       text: 'FILM',
       searchName: null,
       filmList: null,
+      currentPage: 1,
+      totalResults: null,
     }
-    this.downloadPopular()
+    this.downloadListFilm()
   }
 
   onChangeSearch = (e) => {
@@ -26,34 +28,46 @@ export default class App extends React.Component {
   // eslint-disable-next-line class-methods-use-this
   onSubmitSearch = (e) => {
     e.preventDefault()
-    const { searchName } = this.state
+    this.downloadListFilm()
+  }
+
+  onChangePage = async (page) => {
+    await this.setState(() => ({
+      currentPage: page,
+    }))
+    this.downloadListFilm()
+  }
+
+  downloadListFilm() {
+    const { searchName, currentPage } = this.state
     if (searchName) {
       // console.log(searchName)
-      this.MovieService.getSearch(searchName)
+      this.MovieService.getSearch(searchName, currentPage)
         .then((listFilm) => {
           console.log(listFilm)
           this.setState(() => ({
-            filmList: listFilm,
+            filmList: listFilm.results,
+            totalResults: listFilm.total_results,
           }))
         })
         .catch((error) => alert(error))
     } else {
-      this.downloadPopular()
+      this.MovieService.getPopular(currentPage).then((listFilm) => {
+        this.setState(() => ({
+          filmList: listFilm.results,
+          totalResults: listFilm.total_results,
+        }))
+      })
     }
-    // await this.setState((state) => ({
-    //
-    //   search: state.searchName,
-    // }))
-    // return null
   }
 
-  async downloadPopular() {
-    await this.MovieService.getPopular().then((filmList) => {
-      this.setState(() => ({
-        filmList,
-      }))
-    })
-  }
+  // async downloadPopular() {
+  //   await this.MovieService.getPopular().then((filmList) => {
+  //     this.setState(() => ({
+  //       filmList,
+  //     }))
+  //   })
+  // }
 
   // downloadInfo = (id) => {
   //   const { text } = this.state
@@ -64,12 +78,26 @@ export default class App extends React.Component {
   //     .then((body) => console.log(body, text))
   // }
 
-  // eslint-disable-next-line class-methods-use-this
-
   render() {
-    const { text, searchName, filmList } = this.state
+    const { text, searchName, filmList, currentPage, totalResults } = this.state
     return (
       <div className="app">
+        {/* <Tabs */}
+        {/*  defaultActiveKey="1" */}
+        {/*  centered */}
+        {/*  items={new Array(3).fill(null).map((_, i) => { */}
+        {/*    const id = String(i + 1) */}
+        {/*    return { */}
+        {/*      label: `Tab ${id}`, */}
+        {/*      key: id, */}
+        {/*      children: `Content of Tab Pane ${id}`, */}
+        {/*    } */}
+        {/*  })} */}
+        {/* /> */}
+        <Menu mode="horizontal" defaultSelectedKeys={['mail']}>
+          <Menu.Item key="search">Search</Menu.Item>
+          <Menu.Item key="rated">Rated</Menu.Item>
+        </Menu>
         <form onSubmit={this.onSubmitSearch}>
           <Input
             placeholder="Type to search..."
@@ -78,6 +106,13 @@ export default class App extends React.Component {
           />
         </form>
         <ListFilm filmList={filmList} />
+        <Pagination
+          current={currentPage}
+          onChange={this.onChangePage}
+          PageSize={20}
+          showSizeChanger={false}
+          total={totalResults}
+        />
         <span>{text}</span>
       </div>
     )

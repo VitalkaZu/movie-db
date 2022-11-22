@@ -21,6 +21,7 @@
     "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
     "linebreak-style": [0, "unix"],
     "operator-linebreak": ["error", "after"],
-    "no-underscore-dangle": 0
+    "no-underscore-dangle": 0,
+    "react/prop-types": 0
   }
 }

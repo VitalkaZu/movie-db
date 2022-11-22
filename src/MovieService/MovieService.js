@@ -18,24 +18,26 @@ export default class MovieService {
     }
   }
 
-  getDetail = async (id) => {
-    const res = await this.getResource(`/movie/${id}?${this._apiKey}`)
-    console.log(res)
+  getFilm = async (id) => {
+    const film = await this.getResource(`/movie/${id}?${this._apiKey}`)
+    console.log(film)
+    return this._transformFilm(film)
+  }
+
+  getPopular = async (page) => {
+    const res = await this.getResource(
+      `/movie/popular?${this._apiKey}&page=${page}`
+    )
     return res
   }
 
-  async getPopular() {
-    const res = await this.getResource(`/movie/popular?${this._apiKey}&page=1`)
-    return res.results
-  }
-
-  getSearch = async (query) => {
+  getSearch = async (query, page) => {
     try {
       const res = await this.getResource(
-        `/search/movie?${this._apiKey}&language=en-US&query=${query}&page=1&include_adult=false`
+        `/search/movie?${this._apiKey}&language=en-US&query=${query}&page=${page}&include_adult=false`
       )
       console.log(res.results)
-      return res.results
+      return res
     } catch (e) {
       alert(e)
       return false
@@ -46,4 +48,14 @@ export default class MovieService {
     const res = await this.getResource(`/movie/${id}/keywords?${this._apiKey}`)
     return res.keywords
   }
+
+  // eslint-disable-next-line class-methods-use-this
+  _transformFilm = (film) => ({
+    title: film.title,
+    releaseDate: film.release_date,
+    posterPath: `https://image.tmdb.org/t/p/w300_and_h450_bestv2${film.poster_path}`,
+    genres: film.genres,
+    voteAverage: film.vote_average,
+    overview: film.overview,
+  })
 }
