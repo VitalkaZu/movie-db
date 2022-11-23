@@ -19,7 +19,11 @@ export default class CardFilm extends React.Component {
       loading: true,
       error: false,
     }
-    this.downloadFilmInfo(props.id)
+  }
+
+  componentDidMount() {
+    const { id } = this.props
+    this.downloadFilmInfo(id)
   }
 
   downloadFilmInfo(id) {
@@ -31,12 +35,7 @@ export default class CardFilm extends React.Component {
           error: false,
         })
       })
-      .catch(
-        this.setState({
-          error: true,
-          loading: false,
-        })
-      )
+      .catch(() => this.setState({ error: true, loading: false }))
   }
 
   render() {

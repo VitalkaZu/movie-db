@@ -1,5 +1,7 @@
 import React from 'react'
 import { Input, Menu, Pagination } from 'antd'
+// import { debounce } from 'lodash'
+import _debounce from 'lodash/debounce'
 import MovieService from '../MovieService'
 import ListFilm from '../ListFilm'
 import ErrorIndicator from '../ErrorIndicator'
@@ -27,7 +29,11 @@ export default class App extends React.Component {
   onChangeSearch = (e) => {
     this.setState({
       searchName: e.target.value,
+      currentPage: 1,
     })
+    this.debouncedDownloadListFilm()
+    // this.downloadListFilm()
+    // debounce(this.downloadListFilm, 1000)
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -43,6 +49,13 @@ export default class App extends React.Component {
     }))
     this.downloadListFilm()
   }
+
+  // eslint-disable-next-line class-methods-use-this
+  debouncedDownloadListFilm = () => _debounce(this.downloadListFilm(), 500)
+
+  // debounceOnChangeSearch() {
+  //   return debounce(this.onChangeSearch, 500)
+  // }
 
   downloadListFilm() {
     const { searchName, currentPage } = this.state
@@ -71,23 +84,6 @@ export default class App extends React.Component {
     }
   }
 
-  // async downloadPopular() {
-  //   await this.MovieService.getPopular().then((filmList) => {
-  //     this.setState(() => ({
-  //       filmList,
-  //     }))
-  //   })
-  // }
-
-  // downloadInfo = (id) => {
-  //   const { text } = this.state
-  //   fetch(
-  //     `https://api.themoviedb.org/3/movie/${id}?api_key=a5bc79536e94cb8671d55c4b9eabb5f9`
-  //   )
-  //     .then((res) => res.json())
-  //     .then((body) => console.log(body, text))
-  // }
-
   render() {
     const { text, searchName, filmList, currentPage, totalResults, error } =
       this.state
@@ -102,10 +98,14 @@ export default class App extends React.Component {
           onChange={this.onChangePage}
           pageSize={20}
           showSizeChanger={false}
-          total={totalResults}
+          total={totalResults > 10000 ? 10000 : totalResults}
         />
       </>
     ) : null
+    const itemsMenu = [
+      { label: 'Search', key: 'search' },
+      { label: 'Rated', key: 'rated' },
+    ]
     return (
       <div className="app">
         {/* <Tabs */}
@@ -120,10 +120,11 @@ export default class App extends React.Component {
         {/*    } */}
         {/*  })} */}
         {/* /> */}
-        <Menu mode="horizontal" defaultSelectedKeys={['search']}>
-          <Menu.Item key="search">Search</Menu.Item>
-          <Menu.Item key="rated">Rated</Menu.Item>
-        </Menu>
+        <Menu
+          mode="horizontal"
+          defaultSelectedKeys={['search']}
+          items={itemsMenu}
+        />
         <form onSubmit={this.onSubmitSearch}>
           <Input
             placeholder="Type to search..."
