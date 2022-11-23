@@ -3,6 +3,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 // import EllipsisMiddle from '../EllipsisMiddle'
 import MovieService from '../MovieService'
+import ErrorIndicator from '../ErrorIndicator'
 import './Card.css'
 
 // const { Paragraph } = Typography
@@ -16,6 +17,7 @@ export default class CardFilm extends React.Component {
     this.state = {
       film: {},
       loading: true,
+      error: false,
     }
     this.downloadFilmInfo(props.id)
   }
@@ -40,12 +42,8 @@ export default class CardFilm extends React.Component {
   render() {
     const { film, loading, error } = this.state
     const hasData = !(loading || error)
-    const errorMessage = error ? <p>Error</p> : null
-    const spinner = loading ? (
-      <Space size="middle">
-        <Spin size="large" />
-      </Space>
-    ) : null
+    const errorMessage = error ? <ErrorIndicator text="Film not load" /> : null
+    const spinner = loading ? <RenderSpiner /> : null
     const content = hasData ? <FilmView film={film} /> : null
 
     return (
@@ -56,6 +54,14 @@ export default class CardFilm extends React.Component {
       </div>
     )
   }
+}
+
+function RenderSpiner() {
+  return (
+    <Space size="middle">
+      <Spin size="large" />
+    </Space>
+  )
 }
 
 function cutText(text, limit) {

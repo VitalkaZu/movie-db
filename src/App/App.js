@@ -2,6 +2,7 @@ import React from 'react'
 import { Input, Menu, Pagination } from 'antd'
 import MovieService from '../MovieService'
 import ListFilm from '../ListFilm'
+import ErrorIndicator from '../ErrorIndicator'
 import './App2.css'
 
 export default class App extends React.Component {
@@ -15,7 +16,11 @@ export default class App extends React.Component {
       filmList: null,
       currentPage: 1,
       totalResults: null,
+      error: false,
     }
+  }
+
+  componentDidMount() {
     this.downloadListFilm()
   }
 
@@ -28,6 +33,7 @@ export default class App extends React.Component {
   // eslint-disable-next-line class-methods-use-this
   onSubmitSearch = (e) => {
     e.preventDefault()
+    this.setState(() => ({ currentPage: 1 }))
     this.downloadListFilm()
   }
 
@@ -48,16 +54,20 @@ export default class App extends React.Component {
           this.setState(() => ({
             filmList: listFilm.results,
             totalResults: listFilm.total_results,
+            error: false,
           }))
         })
-        .catch((error) => alert(error))
+        .catch(() => this.setState({ error: true }))
     } else {
-      this.MovieService.getPopular(currentPage).then((listFilm) => {
-        this.setState(() => ({
-          filmList: listFilm.results,
-          totalResults: listFilm.total_results,
-        }))
-      })
+      this.MovieService.getPopular(currentPage)
+        .then((listFilm) => {
+          this.setState(() => ({
+            filmList: listFilm.results,
+            totalResults: listFilm.total_results,
+            error: false,
+          }))
+        })
+        .catch(() => this.setState({ error: true }))
     }
   }
 
@@ -79,7 +89,23 @@ export default class App extends React.Component {
   // }
 
   render() {
-    const { text, searchName, filmList, currentPage, totalResults } = this.state
+    const { text, searchName, filmList, currentPage, totalResults, error } =
+      this.state
+    const errorMesage = error ? (
+      <ErrorIndicator text="Film list not load" />
+    ) : null
+    const renderList = !error ? (
+      <>
+        <ListFilm filmList={filmList} />
+        <Pagination
+          current={currentPage}
+          onChange={this.onChangePage}
+          pageSize={20}
+          showSizeChanger={false}
+          total={totalResults}
+        />
+      </>
+    ) : null
     return (
       <div className="app">
         {/* <Tabs */}
@@ -94,7 +120,7 @@ export default class App extends React.Component {
         {/*    } */}
         {/*  })} */}
         {/* /> */}
-        <Menu mode="horizontal" defaultSelectedKeys={['mail']}>
+        <Menu mode="horizontal" defaultSelectedKeys={['search']}>
           <Menu.Item key="search">Search</Menu.Item>
           <Menu.Item key="rated">Rated</Menu.Item>
         </Menu>
@@ -105,14 +131,8 @@ export default class App extends React.Component {
             onChange={this.onChangeSearch}
           />
         </form>
-        <ListFilm filmList={filmList} />
-        <Pagination
-          current={currentPage}
-          onChange={this.onChangePage}
-          PageSize={20}
-          showSizeChanger={false}
-          total={totalResults}
-        />
+        {errorMesage}
+        {renderList}
         <span>{text}</span>
       </div>
     )
