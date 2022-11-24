@@ -50,8 +50,8 @@ export default class App extends React.Component {
     this.downloadListFilm()
   }
 
-  // eslint-disable-next-line class-methods-use-this
-  debouncedDownloadListFilm = () => _debounce(this.downloadListFilm(), 500)
+  // eslint-disable-next-line class-methods-use-this,react/sort-comp
+  debouncedDownloadListFilm = _debounce(this.downloadListFilm, 500)
 
   // debounceOnChangeSearch() {
   //   return debounce(this.onChangeSearch, 500)
