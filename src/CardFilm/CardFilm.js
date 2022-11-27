@@ -4,6 +4,7 @@ import PropTypes from 'prop-types'
 // import EllipsisMiddle from '../EllipsisMiddle'
 import MovieService from '../MovieService'
 import ErrorIndicator from '../ErrorIndicator'
+import CircleRate from '../CircleRate'
 import './Card.css'
 
 // const { Paragraph } = Typography
@@ -84,7 +85,10 @@ function FilmView({ film }) {
     <>
       <img className="card-poster" alt="Poster for film" src={posterPath} />
       <div className="card-description ">
-        <span className="card-title">{title}</span>
+        <span className="card-title">
+          <span className="card-title-text">{title}</span>
+          <CircleRate percent={voteAverage} />
+        </span>
         <span className="card-date">{releaseDate}</span>
         <div className="card-genres">{renderKeywords(genres)}</div>
         <Rate

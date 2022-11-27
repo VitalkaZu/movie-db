@@ -17,6 +17,11 @@
 }
 
 .card-title {
+  display: flex;
+  justify-content: space-between;
+}
+
+.card-title-text {
   font-weight: 400;
   font-size: 20px;
   line-height: 28px;
