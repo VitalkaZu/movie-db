@@ -38,7 +38,13 @@ function ListFilm({ filmList }) {
         </Space>
       )
     }
-    return filmList.map((film) => <CardFilm key={film.id} id={film.id} />)
+    return filmList.map((film) => (
+      <CardFilm
+        key={film.id}
+        id={film.id}
+        guestSessionId={film.guestSessionId}
+      />
+    ))
   }
 
   return <ul className="film-list">{renderFilms()}</ul>

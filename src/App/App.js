@@ -1,5 +1,5 @@
 import React from 'react'
-import { Input, Menu, Pagination } from 'antd'
+import { Input, Pagination, Tabs } from 'antd'
 // import { debounce } from 'lodash'
 import _debounce from 'lodash/debounce'
 import MovieService from '../MovieService'
@@ -13,17 +13,25 @@ export default class App extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      text: 'FILM',
       searchName: null,
       filmList: null,
       currentPage: 1,
       totalResults: null,
       error: false,
+      guestSessionId: null,
+      ratedFilms: null,
     }
   }
 
   componentDidMount() {
     this.downloadListFilm()
+    this.MovieService.createGuestSession()
+      .then((guestSessionId) => {
+        this.setState({
+          guestSessionId,
+        })
+      })
+      .catch(() => this.setState({ error: true }))
   }
 
   onChangeSearch = (e) => {
@@ -84,15 +92,43 @@ export default class App extends React.Component {
     }
   }
 
-  render() {
-    const { text, searchName, filmList, currentPage, totalResults, error } =
-      this.state
-    const errorMesage = error ? (
-      <ErrorIndicator text="Film list not load" />
-    ) : null
-    const renderList = !error ? (
+  searchForm() {
+    const { searchName } = this.state
+    return (
+      <form onSubmit={this.onSubmitSearch}>
+        <Input
+          placeholder="Type to search..."
+          value={searchName}
+          onChange={this.onChangeSearch}
+        />
+      </form>
+    )
+  }
+
+  ratedFilms() {
+    const { guestSessionId } = this.state
+    return <p>{guestSessionId}</p>
+  }
+
+  renderList() {
+    const {
+      filmList,
+      ratedFilms,
+      currentPage,
+      totalResults,
+      error,
+      guestSessionId,
+    } = this.state
+    if (error) {
+      return <ErrorIndicator text="Film list not load" />
+    }
+    return (
       <>
-        <ListFilm filmList={filmList} />
+        <ListFilm
+          filmList={filmList}
+          ratedFilms={ratedFilms}
+          guestSessionId={guestSessionId}
+        />
         <Pagination
           current={currentPage}
           onChange={this.onChangePage}
@@ -101,40 +137,27 @@ export default class App extends React.Component {
           total={totalResults > 10000 ? 10000 : totalResults}
         />
       </>
-    ) : null
-    const itemsMenu = [
-      { label: 'Search', key: 'search' },
-      { label: 'Rated', key: 'rated' },
+    )
+  }
+
+  render() {
+    const items = [
+      {
+        label: 'Search',
+        key: 'search',
+        children: (
+          <>
+            {this.searchForm()}
+            {this.renderList()}
+          </>
+        ),
+      },
+      { label: 'Rated', key: 'rated', children: <>{this.ratedFilms()}</> },
     ]
+
     return (
       <div className="app">
-        {/* <Tabs */}
-        {/*  defaultActiveKey="1" */}
-        {/*  centered */}
-        {/*  items={new Array(3).fill(null).map((_, i) => { */}
-        {/*    const id = String(i + 1) */}
-        {/*    return { */}
-        {/*      label: `Tab ${id}`, */}
-        {/*      key: id, */}
-        {/*      children: `Content of Tab Pane ${id}`, */}
-        {/*    } */}
-        {/*  })} */}
-        {/* /> */}
-        <Menu
-          mode="horizontal"
-          defaultSelectedKeys={['search']}
-          items={itemsMenu}
-        />
-        <form onSubmit={this.onSubmitSearch}>
-          <Input
-            placeholder="Type to search..."
-            value={searchName}
-            onChange={this.onChangeSearch}
-          />
-        </form>
-        {errorMesage}
-        {renderList}
-        <span>{text}</span>
+        <Tabs items={items} />
       </div>
     )
   }

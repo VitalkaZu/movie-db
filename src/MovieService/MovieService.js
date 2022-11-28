@@ -49,6 +49,32 @@ export default class MovieService {
     return res.keywords
   }
 
+  createGuestSession = async () => {
+    const res = await this.getResource(
+      `/authentication/guest_session/new?${this._apiKey}`
+    )
+    return res.guest_session_id
+  }
+
+  rateMovie = async (guestSessionId, filmId, rateValue) => {
+    const rate = {
+      value: rateValue,
+    }
+
+    const response = await fetch(
+      `${this._baseUrl}/movie/${filmId}/rating?guest_session_id=${guestSessionId}&${this._apiKey}`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json;charset=utf-8',
+        },
+        body: JSON.stringify(rate),
+      }
+    )
+    const result = await response.json()
+    alert(result.status_message)
+  }
+
   // eslint-disable-next-line class-methods-use-this
   _transformFilm = (film) => ({
     title: film.title,

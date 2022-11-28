@@ -9,6 +9,7 @@ import './Card.css'
 
 // const { Paragraph } = Typography
 // const { Meta } = Card
+// const MovieService = new MovieService()
 
 export default class CardFilm extends React.Component {
   MovieService = new MovieService()
@@ -79,7 +80,22 @@ function renderKeywords(arr) {
 }
 
 function FilmView({ film }) {
-  const { title, releaseDate, posterPath, genres, voteAverage, overview } = film
+  const {
+    title,
+    releaseDate,
+    posterPath,
+    genres,
+    voteAverage,
+    overview,
+    // guestSessionId,
+    // id,
+  } = film
+
+  // const onChangeRate = (rate) => {
+  //   MovieServices.rateMovie(guestSessionId, id, rate).then((result) => {
+  //     console.log(result.status_message)
+  //   })
+  // }
 
   return (
     <>
@@ -93,10 +109,9 @@ function FilmView({ film }) {
         <div className="card-genres">{renderKeywords(genres)}</div>
         <Rate
           className="card-rate"
-          disabled
-          allowHalf
           count={10}
           value={voteAverage}
+          // onChange={onChangeRate}
         />
         <span>{cutText(overview, 100)}</span>
       </div>
