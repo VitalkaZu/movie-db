@@ -1,10 +1,26 @@
 .circle-rate {
-    width: 30px;
-    height: 30px;
-    border: solid 2px black;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  border: solid 2px black;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.circle-rate_red {
+  border-color: #E90000;
+}
+
+.circle-rate_orange{
+  border-color: #E97E00;
+}
+
+.circle-rate_yellow{
+  border-color: #E9D100;
+}
+
+.circle-rate_green{
+  border-color: #66E900;
 }
