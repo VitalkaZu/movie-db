@@ -5,6 +5,7 @@ import _debounce from 'lodash/debounce'
 import MovieService from '../MovieService'
 import ListFilm from '../ListFilm'
 import ErrorIndicator from '../ErrorIndicator'
+import { MovieServiceProvider } from '../MovieServiceContext'
 import './App2.css'
 
 export default class App extends React.Component {
@@ -25,13 +26,7 @@ export default class App extends React.Component {
 
   componentDidMount() {
     this.downloadListFilm()
-    this.MovieService.createGuestSession()
-      .then((guestSessionId) => {
-        this.setState({
-          guestSessionId,
-        })
-      })
-      .catch(() => this.setState({ error: true }))
+    this.createGuestSession()
   }
 
   onChangeSearch = (e) => {
@@ -56,6 +51,30 @@ export default class App extends React.Component {
       currentPage: page,
     }))
     this.downloadListFilm()
+  }
+
+  createGuestSession() {
+    if (
+      Date.parse(localStorage.getItem('expires_at')) < Date.now() ||
+      !localStorage.getItem('expires_at')
+    ) {
+      this.MovieService.createGuestSession()
+        .then((res) => {
+          this.setState({
+            guestSessionId: res.guest_session_id,
+          })
+          localStorage.setItem('guest_session_id', res.guest_session_id)
+          localStorage.setItem('expires_at', res.expires_at)
+          // this.downloadRatedFimls(guestSessionId)
+        })
+        .catch(() => this.setState({ error: true }))
+    } else {
+      this.setState({
+        guestSessionId: localStorage.getItem('guest_session_id'),
+      })
+    }
+    // const { guestSessionId } = this.state
+    this.downloadRatedFimls('1b4422940f82f7df699827edff6f452b')
   }
 
   // eslint-disable-next-line class-methods-use-this,react/sort-comp
@@ -90,6 +109,18 @@ export default class App extends React.Component {
         })
         .catch(() => this.setState({ error: true }))
     }
+  }
+
+  downloadRatedFimls(guestSessionId) {
+    // const { guestSessionId } = this.state
+    this.MovieService.getRatedMovies(guestSessionId)
+      .then((listFilm) => {
+        console.log(listFilm)
+        this.setState(() => ({
+          ratedFilms: listFilm.results,
+        }))
+      })
+      .catch((e) => console.log(e))
   }
 
   searchForm() {
@@ -156,9 +187,11 @@ export default class App extends React.Component {
     ]
 
     return (
-      <div className="app">
-        <Tabs items={items} />
-      </div>
+      <MovieServiceProvider value={this.MovieService}>
+        <div className="app">
+          <Tabs items={items} />
+        </div>
+      </MovieServiceProvider>
     )
   }
 }

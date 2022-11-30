@@ -5,6 +5,7 @@ import PropTypes from 'prop-types'
 import MovieService from '../MovieService'
 import ErrorIndicator from '../ErrorIndicator'
 import CircleRate from '../CircleRate'
+// import { MovieServiceConsumer } from '../MovieServiceContext'
 import './Card.css'
 
 // const { Paragraph } = Typography
@@ -28,6 +29,15 @@ export default class CardFilm extends React.Component {
     this.downloadFilmInfo(id)
   }
 
+  onChangeRate = (rate) => {
+    const { guestSessionId, id } = this.props
+    this.MovieService.rateMovie(guestSessionId, id, rate)
+      .then((result) => {
+        console.log(result)
+      })
+      .catch((e) => console.log(e))
+  }
+
   downloadFilmInfo(id) {
     this.MovieService.getFilm(id)
       .then((film) => {
@@ -45,7 +55,9 @@ export default class CardFilm extends React.Component {
     const hasData = !(loading || error)
     const errorMessage = error ? <ErrorIndicator text="Film not load" /> : null
     const spinner = loading ? <RenderSpiner /> : null
-    const content = hasData ? <FilmView film={film} /> : null
+    const content = hasData ? (
+      <FilmView film={film} onChangeRate={this.onChangeRate} />
+    ) : null
 
     return (
       <div className="card">
@@ -79,20 +91,11 @@ function renderKeywords(arr) {
   return arr.map((genre) => <Tag key={genre.id}>{genre.name}</Tag>)
 }
 
-function FilmView({ film }) {
-  const {
-    title,
-    releaseDate,
-    posterPath,
-    genres,
-    voteAverage,
-    overview,
-    // guestSessionId,
-    // id,
-  } = film
+function FilmView({ film, onChangeRate }) {
+  const { title, releaseDate, posterPath, genres, voteAverage, overview } = film
 
   // const onChangeRate = (rate) => {
-  //   MovieServices.rateMovie(guestSessionId, id, rate).then((result) => {
+  //   MovieService.rateMovie(guestSessionId, id, rate).then((result) => {
   //     console.log(result.status_message)
   //   })
   // }
@@ -111,7 +114,7 @@ function FilmView({ film }) {
           className="card-rate"
           count={10}
           value={voteAverage}
-          // onChange={onChangeRate}
+          onChange={onChangeRate}
         />
         <span>{cutText(overview, 100)}</span>
       </div>

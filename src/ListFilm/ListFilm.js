@@ -6,7 +6,7 @@ import CardFilm from '../CardFilm'
 import './ListFilm.css'
 // import CardFilm from '../CardFilm'
 
-function ListFilm({ filmList }) {
+function ListFilm({ filmList, guestSessionId }) {
   // movieService = new MovieService()
 
   // constructor(props) {
@@ -39,11 +39,7 @@ function ListFilm({ filmList }) {
       )
     }
     return filmList.map((film) => (
-      <CardFilm
-        key={film.id}
-        id={film.id}
-        guestSessionId={film.guestSessionId}
-      />
+      <CardFilm key={film.id} id={film.id} guestSessionId={guestSessionId} />
     ))
   }
 

@@ -53,7 +53,7 @@ export default class MovieService {
     const res = await this.getResource(
       `/authentication/guest_session/new?${this._apiKey}`
     )
-    return res.guest_session_id
+    return res
   }
 
   rateMovie = async (guestSessionId, filmId, rateValue) => {
@@ -72,7 +72,15 @@ export default class MovieService {
       }
     )
     const result = await response.json()
-    alert(result.status_message)
+    return result
+  }
+
+  getRatedMovies = async (guestSessionId) => {
+    const res = await this.getResource(
+      `/guest_session/${guestSessionId}/rated/movies?${this._apiKey}&language=en-US&sort_by=created_at.asc`
+    )
+    console.log(res.results)
+    return res
   }
 
   // eslint-disable-next-line class-methods-use-this
