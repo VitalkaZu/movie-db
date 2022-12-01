@@ -75,9 +75,9 @@ export default class MovieService {
     return result
   }
 
-  getRatedMovies = async (guestSessionId) => {
+  getRatedMovies = async (guestSessionId, page) => {
     const res = await this.getResource(
-      `/guest_session/${guestSessionId}/rated/movies?${this._apiKey}&language=en-US&sort_by=created_at.asc`
+      `/guest_session/${guestSessionId}/rated/movies?${this._apiKey}&language=en-US&sort_by=created_at.asc&page=${page}`
     )
     console.log(res.results)
     return res

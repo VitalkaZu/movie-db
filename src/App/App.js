@@ -5,9 +5,12 @@ import { Input, Tabs } from 'antd'
 import _debounce from 'lodash/debounce'
 import MovieService from '../MovieService'
 import ListFilm from '../ListFilm'
+import GenresContext from '../GenresContext'
 // import ErrorIndicator from '../ErrorIndicator'
-import { MovieServiceProvider } from '../MovieServiceContext'
+// import { MovieServiceProvider } from '../MovieServiceContext'
 import './App2.css'
+
+// const GenresContext = React.createContext()
 
 export default class App extends React.Component {
   MovieService = new MovieService()
@@ -30,7 +33,7 @@ export default class App extends React.Component {
       // totalResults: null,
       // error: false,
       guestSessionId: null,
-      // ratedFilms: null,
+      ratedFilms: null,
       functionDownload: this.MovieService.getPopular,
     }
   }
@@ -40,6 +43,13 @@ export default class App extends React.Component {
     // this.setState({ functionDownload: () => this.MovieService.getPopular() })
     this.createGuestSession()
   }
+
+  // componentDidUpdate(prevProps, prevState) {
+  //   const { guestSessionId } = this.state
+  //   if (prevState.guestSessionId !== guestSessionId) {
+  //     // this.downloadRatedFimls()
+  //   }
+  // }
 
   onChangeSearch = (e) => {
     this.setState({
@@ -69,9 +79,9 @@ export default class App extends React.Component {
           this.setState({
             guestSessionId: res.guest_session_id,
           })
+          localStorage.clear()
           localStorage.setItem('guest_session_id', res.guest_session_id)
           localStorage.setItem('expires_at', res.expires_at)
-          // this.downloadRatedFimls(guestSessionId)
         })
         .catch((e) => console.log(e))
     } else {
@@ -79,8 +89,6 @@ export default class App extends React.Component {
         guestSessionId: localStorage.getItem('guest_session_id'),
       })
     }
-    // const { guestSessionId } = this.state
-    // this.downloadRatedFimls('5010e8db164e2c8efca4480372f3a9b8')
   }
 
   // eslint-disable-next-line class-methods-use-this,react/sort-comp
@@ -141,10 +149,10 @@ export default class App extends React.Component {
     )
   }
 
-  ratedFilms() {
-    const { guestSessionId } = this.state
-    return <p>{guestSessionId}</p>
-  }
+  // ratedFilms() {
+  //   const { guestSessionId } = this.state
+  //   return <p>{guestSessionId}</p>
+  // }
 
   // renderList() {
   //   const {
@@ -178,7 +186,8 @@ export default class App extends React.Component {
   // }
 
   render() {
-    const { functionDownload, searchName } = this.state
+    const { functionDownload, searchName, ratedFilms, guestSessionId } =
+      this.state
     console.log(functionDownload)
     const items = [
       {
@@ -191,22 +200,34 @@ export default class App extends React.Component {
             <ListFilm
               functionDownload={functionDownload}
               searchName={searchName}
+              ratedFilms={ratedFilms}
               // filmList={filmList}
               // ratedFilms={ratedFilms}
-              // guestSessionId={guestSessionId}
+              guestSessionId={guestSessionId}
             />
           </>
         ),
       },
-      { label: 'Rated', key: 'rated', children: <>{this.ratedFilms()}</> },
+      {
+        label: 'Rated',
+        key: 'rated',
+        children: (
+          <ListFilm
+            functionDownload={this.MovieService.getRatedMovies}
+            // searchName={searchName}
+            ratedFilms={ratedFilms}
+            guestSessionId={guestSessionId}
+          />
+        ),
+      },
     ]
 
     return (
-      <MovieServiceProvider value={this.MovieService}>
+      <GenresContext.Provider value="context test">
         <div className="app">
           <Tabs items={items} />
         </div>
-      </MovieServiceProvider>
+      </GenresContext.Provider>
     )
   }
 }

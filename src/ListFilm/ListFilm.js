@@ -1,6 +1,6 @@
 import React from 'react'
 import { Pagination, Space, Spin } from 'antd'
-import PropTypes from 'prop-types'
+// import PropTypes from 'prop-types'
 // import MovieService from '../MovieService'
 import CardFilm from '../CardFilm'
 import './ListFilm.css'
@@ -12,7 +12,8 @@ export default class ListFilm extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      filmList: props.filmList,
+      filmList: null,
+      // filmList: props.filmList,
       currentPage: 1,
       totalResults: null,
       error: false,
@@ -52,9 +53,19 @@ export default class ListFilm extends React.Component {
 
   downloadListFilm() {
     const { currentPage } = this.state
-    const { functionDownload, searchName } = this.props
+    const { functionDownload, searchName, guestSessionId } = this.props
     if (searchName) {
       functionDownload(searchName, currentPage)
+        .then((listFilm) => {
+          this.setState(() => ({
+            filmList: listFilm.results,
+            totalResults: listFilm.total_results,
+            error: false,
+          }))
+        })
+        .catch(() => this.setState({ error: true }))
+    } else if (guestSessionId) {
+      functionDownload(guestSessionId, currentPage)
         .then((listFilm) => {
           this.setState(() => ({
             filmList: listFilm.results,
@@ -88,7 +99,12 @@ export default class ListFilm extends React.Component {
       )
     }
     return filmList.map((film) => (
-      <CardFilm key={film.id} id={film.id} guestSessionId={guestSessionId} />
+      <CardFilm
+        key={film.id}
+        id={film.id}
+        guestSessionId={guestSessionId}
+        rate={film.rating}
+      />
     ))
   }
 
@@ -126,9 +142,9 @@ export default class ListFilm extends React.Component {
 //   )
 // }
 
-ListFilm.propTypes = {
-  // eslint-disable-next-line react/require-default-props,react/forbid-prop-types
-  filmList: PropTypes.array,
-}
+// ListFilm.propTypes = {
+//   // eslint-disable-next-line react/require-default-props,react/forbid-prop-types
+//   filmList: PropTypes.array,
+// }
 
 // export default ListFilm

@@ -5,6 +5,7 @@ import PropTypes from 'prop-types'
 import MovieService from '../MovieService'
 import ErrorIndicator from '../ErrorIndicator'
 import CircleRate from '../CircleRate'
+import GenresContext from '../GenresContext'
 // import { MovieServiceConsumer } from '../MovieServiceContext'
 import './Card.css'
 
@@ -20,12 +21,14 @@ export default class CardFilm extends React.Component {
     this.state = {
       film: {},
       loading: true,
+      rate: 0,
       error: false,
     }
   }
 
   componentDidMount() {
-    const { id } = this.props
+    const { id, rate } = this.props
+    this.setState({ rate: rate || localStorage.getItem(id) || 0 })
     this.downloadFilmInfo(id)
   }
 
@@ -33,6 +36,8 @@ export default class CardFilm extends React.Component {
     const { guestSessionId, id } = this.props
     this.MovieService.rateMovie(guestSessionId, id, rate)
       .then((result) => {
+        this.setState({ rate })
+        localStorage.setItem(id, rate)
         console.log(result)
       })
       .catch((e) => console.log(e))
@@ -51,12 +56,12 @@ export default class CardFilm extends React.Component {
   }
 
   render() {
-    const { film, loading, error } = this.state
+    const { film, loading, error, rate } = this.state
     const hasData = !(loading || error)
     const errorMessage = error ? <ErrorIndicator text="Film not load" /> : null
     const spinner = loading ? <RenderSpiner /> : null
     const content = hasData ? (
-      <FilmView film={film} onChangeRate={this.onChangeRate} />
+      <FilmView film={film} rate={rate} onChangeRate={this.onChangeRate} />
     ) : null
 
     return (
@@ -91,9 +96,9 @@ function renderKeywords(arr) {
   return arr.map((genre) => <Tag key={genre.id}>{genre.name}</Tag>)
 }
 
-function FilmView({ film, onChangeRate }) {
+function FilmView({ film, onChangeRate, rate }) {
   const { title, releaseDate, posterPath, genres, voteAverage, overview } = film
-
+  // const theme = this.context
   // const onChangeRate = (rate) => {
   //   MovieService.rateMovie(guestSessionId, id, rate).then((result) => {
   //     console.log(result.status_message)
@@ -113,14 +118,22 @@ function FilmView({ film, onChangeRate }) {
         <Rate
           className="card-rate"
           count={10}
-          value={voteAverage}
+          value={rate}
           onChange={onChangeRate}
         />
-        <span>{cutText(overview, 100)}</span>
+        <GenresContext.Consumer>
+          {(text) => (
+            <span>
+              {cutText(overview, 100)} {text}
+            </span>
+          )}
+        </GenresContext.Consumer>
       </div>
     </>
   )
 }
+
+CardFilm.contextType = GenresContext
 
 CardFilm.propTypes = {
   id: PropTypes.number.isRequired,

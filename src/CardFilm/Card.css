@@ -33,3 +33,9 @@
   line-height: 22px;
   color: #827e7e;
 }
+
+.card-genres {
+  display: flex;
+  flex-wrap: wrap;
+  row-gap: 8px;
+}
