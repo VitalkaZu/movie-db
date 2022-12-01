@@ -1,26 +1,40 @@
 import React from 'react'
-import { Space, Spin } from 'antd'
+import { Pagination, Space, Spin } from 'antd'
 import PropTypes from 'prop-types'
 // import MovieService from '../MovieService'
 import CardFilm from '../CardFilm'
 import './ListFilm.css'
 // import CardFilm from '../CardFilm'
 
-function ListFilm({ filmList, guestSessionId }) {
+export default class ListFilm extends React.Component {
   // movieService = new MovieService()
+  // ({ filmList, guestSessionId })
+  constructor(props) {
+    super(props)
+    this.state = {
+      filmList: props.filmList,
+      currentPage: 1,
+      totalResults: null,
+      error: false,
+    }
+  }
 
-  // constructor(props) {
-  //   super(props)
-  //   this.state = {
-  //     filmList: props.filmList,
-  //   }
-  // }
+  componentDidMount() {
+    this.downloadListFilm()
+    // const { filmList } = this.props
+    // this.setState(() => ({
+    //   filmList,
+    // }))
+  }
 
-  // componentDidMount() {
-  //   const { filmList } = this.props
-  //   this.setState(() => ({
-  //     filmList,
-  //   }))
+  componentDidUpdate(prevProps) {
+    const { functionDownload } = this.props
+    if (prevProps.functionDownload !== functionDownload) {
+      this.setState({ currentPage: 1 })
+      this.downloadListFilm()
+    }
+  }
+
   // this.movieService.getPopular().then((filmList) => {
   //   console.log(filmList)
   //   this.setState({
@@ -29,8 +43,43 @@ function ListFilm({ filmList, guestSessionId }) {
   // })
   // }
 
+  onChangePage = async (page) => {
+    await this.setState(() => ({
+      currentPage: page,
+    }))
+    this.downloadListFilm()
+  }
+
+  downloadListFilm() {
+    const { currentPage } = this.state
+    const { functionDownload, searchName } = this.props
+    if (searchName) {
+      functionDownload(searchName, currentPage)
+        .then((listFilm) => {
+          this.setState(() => ({
+            filmList: listFilm.results,
+            totalResults: listFilm.total_results,
+            error: false,
+          }))
+        })
+        .catch(() => this.setState({ error: true }))
+    } else {
+      functionDownload(currentPage)
+        .then((listFilm) => {
+          this.setState(() => ({
+            filmList: listFilm.results,
+            totalResults: listFilm.total_results,
+            error: false,
+          }))
+        })
+        .catch(() => this.setState({ error: true }))
+    }
+  }
+
   // eslint-disable-next-line class-methods-use-this
-  const renderFilms = () => {
+  renderFilms = () => {
+    const { filmList } = this.state
+    const { guestSessionId } = this.props
     if (!filmList) {
       return (
         <Space size="middle">
@@ -43,7 +92,22 @@ function ListFilm({ filmList, guestSessionId }) {
     ))
   }
 
-  return <ul className="film-list">{renderFilms()}</ul>
+  render() {
+    const { currentPage, totalResults, error } = this.state
+    console.log(error)
+    return (
+      <>
+        <ul className="film-list">{this.renderFilms()}</ul>
+        <Pagination
+          current={currentPage}
+          onChange={this.onChangePage}
+          pageSize={20}
+          showSizeChanger={false}
+          total={totalResults > 10000 ? 10000 : totalResults}
+        />
+      </>
+    )
+  }
 }
 // <ul className="film-list">{items}</ul>
 //   render() {
@@ -67,4 +131,4 @@ ListFilm.propTypes = {
   filmList: PropTypes.array,
 }
 
-export default ListFilm
+// export default ListFilm
