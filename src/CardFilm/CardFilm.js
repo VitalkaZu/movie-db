@@ -19,8 +19,8 @@ export default class CardFilm extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      film: {},
-      loading: true,
+      // film: {},
+      loading: false,
       rate: 0,
       error: false,
     }
@@ -29,7 +29,7 @@ export default class CardFilm extends React.Component {
   componentDidMount() {
     const { id, rate } = this.props
     this.setState({ rate: rate || localStorage.getItem(id) || 0 })
-    this.downloadFilmInfo(id)
+    // this.downloadFilmInfo(id)
   }
 
   onChangeRate = (rate) => {
@@ -43,20 +43,21 @@ export default class CardFilm extends React.Component {
       .catch((e) => console.log(e))
   }
 
-  downloadFilmInfo(id) {
-    this.MovieService.getFilm(id)
-      .then((film) => {
-        this.setState({
-          film,
-          loading: false,
-          error: false,
-        })
-      })
-      .catch(() => this.setState({ error: true, loading: false }))
-  }
+  // downloadFilmInfo(id) {
+  //   this.MovieService.getFilm(id)
+  //     .then((film) => {
+  //       this.setState({
+  //         film,
+  //         loading: false,
+  //         error: false,
+  //       })
+  //     })
+  //     .catch(() => this.setState({ error: true, loading: false }))
+  // }
 
   render() {
-    const { film, loading, error, rate } = this.state
+    const { loading, error, rate } = this.state
+    const { film } = this.props
     const hasData = !(loading || error)
     const errorMessage = error ? <ErrorIndicator text="Film not load" /> : null
     const spinner = loading ? <RenderSpiner /> : null
@@ -93,7 +94,7 @@ function cutText(text, limit) {
 
 function renderGenres(arrGenres, genres) {
   if (!genres) return null
-  return genres.map((genre) => <Tag key={genre.id}>{genre.name}</Tag>)
+  return genres.map((genre) => <Tag key={genre}>{genre}</Tag>)
   // if (!genres) return null
   // return genres.map((genresId) => {
   // arrGenres.filter(el => {
@@ -103,17 +104,27 @@ function renderGenres(arrGenres, genres) {
 }
 
 function FilmView({ film, onChangeRate, rate }) {
-  const { title, releaseDate, posterPath, genres, voteAverage, overview } = film
+  const {
+    title,
+    releaseDate,
+    poster_path: posterPath,
+    genre_ids: genres,
+    vote_average: voteAverage,
+    overview,
+  } = film
   // const theme = this.context
   // const onChangeRate = (rate) => {
   //   MovieService.rateMovie(guestSessionId, id, rate).then((result) => {
   //     console.log(result.status_message)
   //   })
   // }
-
   return (
     <>
-      <img className="card-poster" alt="Poster for film" src={posterPath} />
+      <img
+        className="card-poster"
+        alt="Poster for film"
+        src={`https://image.tmdb.org/t/p/w300_and_h450_bestv2${posterPath}`}
+      />
       <div className="card-description ">
         <span className="card-title">
           <span className="card-title-text">{title}</span>

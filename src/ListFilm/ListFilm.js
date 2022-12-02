@@ -104,6 +104,7 @@ export default class ListFilm extends React.Component {
     return filmList.map((film) => (
       <CardFilm
         key={film.id}
+        film={film}
         id={film.id}
         guestSessionId={guestSessionId}
         rate={film.rating}

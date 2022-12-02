@@ -2,15 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="77da0a62-e6cf-4802-9d24-b4a9ccc89001" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.eslintrc.json" beforeDir="false" afterPath="$PROJECT_DIR$/.eslintrc.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/App/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/App/App.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CardFilm/Card.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/CardFilm/Card.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/CardFilm/CardFilm.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/CardFilm/CardFilm.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/GenresContext/GenresContext.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/GenresContext/GenresContext.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/GenresContext/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/GenresContext/index.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ListFilm/ListFilm.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/ListFilm/ListFilm.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/MovieService/MovieService.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/MovieService/MovieService.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -73,6 +67,7 @@
       <workItem from="1668993553336" duration="39836000" />
       <workItem from="1669525880329" duration="3249000" />
       <workItem from="1669853372809" duration="21256000" />
+      <workItem from="1669977422193" duration="2496000" />
     </task>
     <servers />
   </component>
