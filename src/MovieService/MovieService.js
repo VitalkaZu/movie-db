@@ -33,9 +33,11 @@ export default class MovieService {
 
   getSearch = async (query, page) => {
     // try {
-    const res = await this.getResource(
-      `/search/movie?${this._apiKey}&language=en-US&query=${query}&page=${page}&include_adult=false`
-    )
+    let path = `/movie/popular?${this._apiKey}&page=${page}`
+    if (query) {
+      path = `/search/movie?${this._apiKey}&language=en-US&query=${query}&page=${page}&include_adult=false`
+    }
+    const res = await this.getResource(path)
     console.log(res.results)
     return res
     // } catch (e) {

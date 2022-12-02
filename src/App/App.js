@@ -15,12 +15,10 @@ import './App2.css'
 export default class App extends React.Component {
   MovieService = new MovieService()
 
-  debouncedChangeFunctionDownload = _debounce(() => {
+  debouncedSearchName = _debounce(() => {
     const { searchName } = this.state
     this.setState({
-      functionDownload: searchName
-        ? this.MovieService.getSearch
-        : this.MovieService.getPopular,
+      sendSearchName: searchName,
     })
   }, 500)
 
@@ -28,6 +26,7 @@ export default class App extends React.Component {
     super(props)
     this.state = {
       searchName: null,
+      sendSearchName: null,
       // filmList: null,
       // currentPage: 1,
       // totalResults: null,
@@ -35,13 +34,10 @@ export default class App extends React.Component {
       guestSessionId: null,
       ratedFilms: null,
       genresList: null,
-      functionDownload: this.MovieService.getPopular,
     }
   }
 
   componentDidMount() {
-    // this.downloadListFilm()
-    // this.setState({ functionDownload: () => this.MovieService.getPopular() })
     this.createGuestSession()
     this.downloadGenresList()
   }
@@ -58,10 +54,7 @@ export default class App extends React.Component {
       searchName: e.target.value,
       // currentPage: 1,
     })
-    this.debouncedChangeFunctionDownload()
-    // this.debouncedDownloadListFilm()
-    // this.downloadListFilm()
-    // debounce(this.downloadListFilm, 1000)
+    this.debouncedSearchName()
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -73,7 +66,7 @@ export default class App extends React.Component {
 
   downloadGenresList() {
     this.MovieService.getMovieGenresList().then(({ genres }) => {
-      this.setState({ genresList: genres.length })
+      this.setState({ genresList: genres })
     })
   }
 
@@ -195,13 +188,13 @@ export default class App extends React.Component {
 
   render() {
     const {
-      functionDownload,
-      searchName,
+      // searchName,
       ratedFilms,
       guestSessionId,
       genresList,
+      sendSearchName,
     } = this.state
-    console.log(functionDownload)
+    // console.log(functionDownload)
     const items = [
       {
         label: 'Search',
@@ -211,8 +204,11 @@ export default class App extends React.Component {
             {this.searchForm()}
             {/* {this.renderList()} */}
             <ListFilm
-              functionDownload={functionDownload}
-              searchName={searchName}
+              functionDownload={(page) => {
+                this.MovieService.getSearch(sendSearchName, page)
+              }}
+              sendSearchName={sendSearchName}
+              // searchName={searchName}
               ratedFilms={ratedFilms}
               // filmList={filmList}
               // ratedFilms={ratedFilms}
@@ -226,7 +222,9 @@ export default class App extends React.Component {
         key: 'rated',
         children: (
           <ListFilm
-            functionDownload={this.MovieService.getRatedMovies}
+            functionDownload={(page) => {
+              this.MovieService.getRatedMovies(guestSessionId, page)
+            }}
             // searchName={searchName}
             ratedFilms={ratedFilms}
             guestSessionId={guestSessionId}

@@ -1,7 +1,7 @@
 import React from 'react'
 import { Pagination, Space, Spin } from 'antd'
 // import PropTypes from 'prop-types'
-// import MovieService from '../MovieService'
+import MovieService from '../MovieService'
 import CardFilm from '../CardFilm'
 import './ListFilm.css'
 // import CardFilm from '../CardFilm'
@@ -9,6 +9,9 @@ import './ListFilm.css'
 export default class ListFilm extends React.Component {
   // movieService = new MovieService()
   // ({ filmList, guestSessionId })
+  // eslint-disable-next-line react/no-unused-class-component-methods
+  MovieService = new MovieService()
+
   constructor(props) {
     super(props)
     this.state = {
@@ -29,23 +32,12 @@ export default class ListFilm extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { functionDownload, searchName } = this.props
-    if (
-      prevProps.functionDownload !== functionDownload ||
-      prevProps.searchName !== searchName
-    ) {
+    const { sendSearchName } = this.props
+    if (prevProps.sendSearchName !== sendSearchName) {
       this.setState({ currentPage: 1 })
       this.downloadListFilm()
     }
   }
-
-  // this.movieService.getPopular().then((filmList) => {
-  //   console.log(filmList)
-  //   this.setState({
-  //     filmList,
-  //   })
-  // })
-  // }
 
   onChangePage = async (page) => {
     await this.setState(() => ({
@@ -56,38 +48,37 @@ export default class ListFilm extends React.Component {
 
   downloadListFilm() {
     const { currentPage } = this.state
-    const { functionDownload, searchName, guestSessionId } = this.props
-    if (searchName) {
-      functionDownload(searchName, currentPage)
-        .then((listFilm) => {
-          this.setState(() => ({
-            filmList: listFilm.results,
-            totalResults: listFilm.total_results,
-            error: false,
-          }))
-        })
-        .catch(() => this.setState({ error: true }))
-    } else if (guestSessionId) {
-      functionDownload(guestSessionId, currentPage)
-        .then((listFilm) => {
-          this.setState(() => ({
-            filmList: listFilm.results,
-            totalResults: listFilm.total_results,
-            error: false,
-          }))
-        })
-        .catch(() => this.setState({ error: true }))
-    } else {
-      functionDownload(currentPage)
-        .then((listFilm) => {
-          this.setState(() => ({
-            filmList: listFilm.results,
-            totalResults: listFilm.total_results,
-            error: false,
-          }))
-        })
-        .catch(() => this.setState({ error: true }))
-    }
+    const { functionDownload } = this.props
+    functionDownload(currentPage)
+      .then((listFilm) => {
+        this.setState(() => ({
+          filmList: listFilm.results,
+          totalResults: listFilm.total_results,
+          error: false,
+        }))
+      })
+      .catch(() => this.setState({ error: true }))
+    // if (sendSearchName === undefined) {
+    //   functionDownload(guestSessionId, currentPage)
+    //     .then((listFilm) => {
+    //       this.setState(() => ({
+    //         filmList: listFilm.results,
+    //         totalResults: listFilm.total_results,
+    //         error: false,
+    //       }))
+    //     })
+    //     .catch(() => this.setState({ error: true }))
+    // } else {
+    //   functionDownload(sendSearchName, currentPage)
+    //     .then((listFilm) => {
+    //       this.setState(() => ({
+    //         filmList: listFilm.results,
+    //         totalResults: listFilm.total_results,
+    //         error: false,
+    //       }))
+    //     })
+    //     .catch(() => this.setState({ error: true }))
+    // }
   }
 
   // eslint-disable-next-line class-methods-use-this

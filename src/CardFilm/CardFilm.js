@@ -93,8 +93,15 @@ function cutText(text, limit) {
 }
 
 function renderGenres(arrGenres, genres) {
-  if (!genres) return null
-  return genres.map((genre) => <Tag key={genre}>{genre}</Tag>)
+  if (genres && arrGenres) {
+    return genres.map((genreID) => {
+      const genreObj = arrGenres.find(({ id }) => id === genreID)
+      return <Tag key={genreObj.id}>{genreObj.name}</Tag>
+    })
+  }
+  return null
+
+  // <Tag key={genre}>{genre}</Tag>)
   // if (!genres) return null
   // return genres.map((genresId) => {
   // arrGenres.filter(el => {
@@ -106,7 +113,7 @@ function renderGenres(arrGenres, genres) {
 function FilmView({ film, onChangeRate, rate }) {
   const {
     title,
-    releaseDate,
+    release_date: releaseDate,
     poster_path: posterPath,
     genre_ids: genres,
     vote_average: voteAverage,
