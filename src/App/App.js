@@ -34,6 +34,7 @@ export default class App extends React.Component {
       // error: false,
       guestSessionId: null,
       ratedFilms: null,
+      genresList: null,
       functionDownload: this.MovieService.getPopular,
     }
   }
@@ -42,6 +43,7 @@ export default class App extends React.Component {
     // this.downloadListFilm()
     // this.setState({ functionDownload: () => this.MovieService.getPopular() })
     this.createGuestSession()
+    this.downloadGenresList()
   }
 
   // componentDidUpdate(prevProps, prevState) {
@@ -67,6 +69,12 @@ export default class App extends React.Component {
     e.preventDefault()
     // this.setState(() => ({ currentPage: 1 }))
     // this.downloadListFilm()
+  }
+
+  downloadGenresList() {
+    this.MovieService.getMovieGenresList().then(({ genres }) => {
+      this.setState({ genresList: genres.length })
+    })
   }
 
   createGuestSession() {
@@ -186,8 +194,13 @@ export default class App extends React.Component {
   // }
 
   render() {
-    const { functionDownload, searchName, ratedFilms, guestSessionId } =
-      this.state
+    const {
+      functionDownload,
+      searchName,
+      ratedFilms,
+      guestSessionId,
+      genresList,
+    } = this.state
     console.log(functionDownload)
     const items = [
       {
@@ -223,7 +236,7 @@ export default class App extends React.Component {
     ]
 
     return (
-      <GenresContext.Provider value="context test">
+      <GenresContext.Provider value={genresList}>
         <div className="app">
           <Tabs items={items} />
         </div>

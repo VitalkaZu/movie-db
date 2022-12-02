@@ -29,8 +29,11 @@ export default class ListFilm extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { functionDownload } = this.props
-    if (prevProps.functionDownload !== functionDownload) {
+    const { functionDownload, searchName } = this.props
+    if (
+      prevProps.functionDownload !== functionDownload ||
+      prevProps.searchName !== searchName
+    ) {
       this.setState({ currentPage: 1 })
       this.downloadListFilm()
     }

@@ -91,9 +91,15 @@ function cutText(text, limit) {
   return newText
 }
 
-function renderKeywords(arr) {
-  if (!arr) return null
-  return arr.map((genre) => <Tag key={genre.id}>{genre.name}</Tag>)
+function renderGenres(arrGenres, genres) {
+  if (!genres) return null
+  return genres.map((genre) => <Tag key={genre.id}>{genre.name}</Tag>)
+  // if (!genres) return null
+  // return genres.map((genresId) => {
+  // arrGenres.filter(el => {
+  // })
+  //   <Tag key={genre.id}>{genre.name}</Tag>
+  // } )
 }
 
 function FilmView({ film, onChangeRate, rate }) {
@@ -114,20 +120,18 @@ function FilmView({ film, onChangeRate, rate }) {
           <CircleRate percent={voteAverage} />
         </span>
         <span className="card-date">{releaseDate}</span>
-        <div className="card-genres">{renderKeywords(genres)}</div>
+        <GenresContext.Consumer>
+          {(arrGenres) => (
+            <div className="card-genres">{renderGenres(arrGenres, genres)}</div>
+          )}
+        </GenresContext.Consumer>
         <Rate
           className="card-rate"
           count={10}
           value={rate}
           onChange={onChangeRate}
         />
-        <GenresContext.Consumer>
-          {(text) => (
-            <span>
-              {cutText(overview, 100)} {text}
-            </span>
-          )}
-        </GenresContext.Consumer>
+        <span>{cutText(overview, 100)}</span>
       </div>
     </>
   )

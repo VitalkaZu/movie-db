@@ -49,6 +49,11 @@ export default class MovieService {
     return res.keywords
   }
 
+  getMovieGenresList = async () => {
+    const res = await this.getResource(`/genre/movie/list?${this._apiKey}`)
+    return res
+  }
+
   createGuestSession = async () => {
     const res = await this.getResource(
       `/authentication/guest_session/new?${this._apiKey}`
