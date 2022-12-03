@@ -17,20 +17,22 @@ export default class App extends React.Component {
 
   debouncedSearchName = _debounce(() => {
     const { searchName } = this.state
+    console.log('Call debounce function')
     this.setState({
       sendSearchName: searchName,
     })
-  }, 500)
+  }, 1000)
 
   constructor(props) {
     super(props)
     this.state = {
       searchName: null,
       sendSearchName: null,
-      // filmList: null,
-      // currentPage: 1,
-      // totalResults: null,
+      filmList: null,
+      currentPage: 1,
+      totalResults: null,
       // error: false,
+      functionLoadFilms: (page) => this.MovieService.getSearch('', page),
       guestSessionId: null,
       ratedFilms: null,
       genresList: null,
@@ -40,6 +42,17 @@ export default class App extends React.Component {
   componentDidMount() {
     this.createGuestSession()
     this.downloadGenresList()
+    this.downloadListFilm()
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    const { functionLoadFilms, sendSearchName } = this.state
+    if (
+      prevState.functionLoadFilms !== functionLoadFilms ||
+      prevState.sendSearchName !== sendSearchName
+    ) {
+      this.downloadListFilm()
+    }
   }
 
   // componentDidUpdate(prevProps, prevState) {
@@ -62,6 +75,27 @@ export default class App extends React.Component {
     e.preventDefault()
     // this.setState(() => ({ currentPage: 1 }))
     // this.downloadListFilm()
+  }
+
+  onChangeTab = (keyTab) => {
+    console.log(keyTab)
+    const { guestSessionId } = this.state
+    if (keyTab === 'search') {
+      this.setState({
+        functionLoadFilms: (page) => {
+          const { sendSearchName } = this.state
+          console.log(sendSearchName)
+          return this.MovieService.getSearch(sendSearchName, page)
+        },
+      })
+    }
+    if (keyTab === 'rated') {
+      this.setState({
+        functionLoadFilms: (page) =>
+          // eslint-disable-next-line implicit-arrow-linebreak
+          this.MovieService.getRatedMovies(guestSessionId, page),
+      })
+    }
   }
 
   downloadGenresList() {
@@ -90,6 +124,22 @@ export default class App extends React.Component {
         guestSessionId: localStorage.getItem('guest_session_id'),
       })
     }
+  }
+
+  downloadListFilm() {
+    const { currentPage, functionLoadFilms } = this.state
+    console.log(currentPage, functionLoadFilms)
+    // const { functionDownload } = this.props
+    functionLoadFilms(currentPage)
+      .then((listFilm) => {
+        console.log(listFilm)
+        this.setState(() => ({
+          filmList: listFilm.results,
+          totalResults: listFilm.total_results,
+          // error: false,
+        }))
+      })
+      .catch((e) => console.log(e))
   }
 
   // eslint-disable-next-line class-methods-use-this,react/sort-comp
@@ -189,10 +239,12 @@ export default class App extends React.Component {
   render() {
     const {
       // searchName,
+      filmList,
       ratedFilms,
       guestSessionId,
       genresList,
       sendSearchName,
+      totalResults,
     } = this.state
     // console.log(functionDownload)
     const items = [
@@ -204,14 +256,16 @@ export default class App extends React.Component {
             {this.searchForm()}
             {/* {this.renderList()} */}
             <ListFilm
-              functionDownload={(page) => {
-                this.MovieService.getSearch(sendSearchName, page)
-              }}
+              // functionDownload={(page) => {
+              //   this.MovieService.getSearch(sendSearchName, page)
+              // }}
+              filmList={filmList}
               sendSearchName={sendSearchName}
               // searchName={searchName}
               ratedFilms={ratedFilms}
               // filmList={filmList}
               // ratedFilms={ratedFilms}
+              totalResults={totalResults}
               guestSessionId={guestSessionId}
             />
           </>
@@ -222,12 +276,14 @@ export default class App extends React.Component {
         key: 'rated',
         children: (
           <ListFilm
-            functionDownload={(page) => {
-              this.MovieService.getRatedMovies(guestSessionId, page)
-            }}
+            // functionDownload={(page) => {
+            //   this.MovieService.getRatedMovies(guestSessionId, page)
+            // }}
             // searchName={searchName}
+            filmList={filmList}
             ratedFilms={ratedFilms}
             guestSessionId={guestSessionId}
+            totalResults={totalResults}
           />
         ),
       },
@@ -236,7 +292,7 @@ export default class App extends React.Component {
     return (
       <GenresContext.Provider value={genresList}>
         <div className="app">
-          <Tabs items={items} />
+          <Tabs items={items} onChange={this.onChangeTab} />
         </div>
       </GenresContext.Provider>
     )

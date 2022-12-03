@@ -15,7 +15,7 @@ export default class ListFilm extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      filmList: null,
+      // filmList: null,
       // filmList: props.filmList,
       currentPage: 1,
       totalResults: null,
@@ -24,7 +24,7 @@ export default class ListFilm extends React.Component {
   }
 
   componentDidMount() {
-    this.downloadListFilm()
+    // this.downloadListFilm()
     // const { filmList } = this.props
     // this.setState(() => ({
     //   filmList,
@@ -35,7 +35,7 @@ export default class ListFilm extends React.Component {
     const { sendSearchName } = this.props
     if (prevProps.sendSearchName !== sendSearchName) {
       this.setState({ currentPage: 1 })
-      this.downloadListFilm()
+      // this.downloadListFilm()
     }
   }
 
@@ -43,48 +43,48 @@ export default class ListFilm extends React.Component {
     await this.setState(() => ({
       currentPage: page,
     }))
-    this.downloadListFilm()
+    // this.downloadListFilm()
   }
 
-  downloadListFilm() {
-    const { currentPage } = this.state
-    const { functionDownload } = this.props
-    functionDownload(currentPage)
-      .then((listFilm) => {
-        this.setState(() => ({
-          filmList: listFilm.results,
-          totalResults: listFilm.total_results,
-          error: false,
-        }))
-      })
-      .catch(() => this.setState({ error: true }))
-    // if (sendSearchName === undefined) {
-    //   functionDownload(guestSessionId, currentPage)
-    //     .then((listFilm) => {
-    //       this.setState(() => ({
-    //         filmList: listFilm.results,
-    //         totalResults: listFilm.total_results,
-    //         error: false,
-    //       }))
-    //     })
-    //     .catch(() => this.setState({ error: true }))
-    // } else {
-    //   functionDownload(sendSearchName, currentPage)
-    //     .then((listFilm) => {
-    //       this.setState(() => ({
-    //         filmList: listFilm.results,
-    //         totalResults: listFilm.total_results,
-    //         error: false,
-    //       }))
-    //     })
-    //     .catch(() => this.setState({ error: true }))
-    // }
-  }
+  // downloadListFilm() {
+  //   const { currentPage } = this.state
+  //   const { functionDownload } = this.props
+  //   functionDownload(currentPage)
+  //     .then((listFilm) => {
+  //       this.setState(() => ({
+  //         filmList: listFilm.results,
+  //         totalResults: listFilm.total_results,
+  //         error: false,
+  //       }))
+  //     })
+  //     .catch(() => this.setState({ error: true }))
+  //   // if (sendSearchName === undefined) {
+  //   //   functionDownload(guestSessionId, currentPage)
+  //   //     .then((listFilm) => {
+  //   //       this.setState(() => ({
+  //   //         filmList: listFilm.results,
+  //   //         totalResults: listFilm.total_results,
+  //   //         error: false,
+  //   //       }))
+  //   //     })
+  //   //     .catch(() => this.setState({ error: true }))
+  //   // } else {
+  //   //   functionDownload(sendSearchName, currentPage)
+  //   //     .then((listFilm) => {
+  //   //       this.setState(() => ({
+  //   //         filmList: listFilm.results,
+  //   //         totalResults: listFilm.total_results,
+  //   //         error: false,
+  //   //       }))
+  //   //     })
+  //   //     .catch(() => this.setState({ error: true }))
+  //   // }
+  // }
 
   // eslint-disable-next-line class-methods-use-this
   renderFilms = () => {
-    const { filmList } = this.state
-    const { guestSessionId } = this.props
+    // const { filmList } = this.state
+    const { guestSessionId, filmList } = this.props
     if (!filmList) {
       return (
         <Space size="middle">

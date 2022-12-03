@@ -1,4 +1,4 @@
-import { Tag, Rate, Space, Spin } from 'antd'
+import { Tag, Rate, Space, Spin, Typography } from 'antd'
 import React from 'react'
 import PropTypes from 'prop-types'
 // import EllipsisMiddle from '../EllipsisMiddle'
@@ -9,7 +9,7 @@ import GenresContext from '../GenresContext'
 // import { MovieServiceConsumer } from '../MovieServiceContext'
 import './Card.css'
 
-// const { Paragraph } = Typography
+const { Paragraph } = Typography
 // const { Meta } = Card
 // const MovieService = new MovieService()
 
@@ -83,14 +83,14 @@ function RenderSpiner() {
   )
 }
 
-function cutText(text, limit) {
-  if (!text) return null
-  // const z = this.getLastIndexWithoutIgnore(text, ['!', ',', '.'])
-  // console.log(text)
-  const newText = text.slice(0, limit)
-  // text.slice(0, z + 1
-  return newText
-}
+// function cutText(text, limit) {
+//   if (!text) return null
+//   // const z = this.getLastIndexWithoutIgnore(text, ['!', ',', '.'])
+//   // console.log(text)
+//   const newText = text.slice(0, limit)
+//   // text.slice(0, z + 1
+//   return newText
+// }
 
 function renderGenres(arrGenres, genres) {
   if (genres && arrGenres) {
@@ -143,13 +143,22 @@ function FilmView({ film, onChangeRate, rate }) {
             <div className="card-genres">{renderGenres(arrGenres, genres)}</div>
           )}
         </GenresContext.Consumer>
+        <Paragraph
+          ellipsis={{
+            rows: 4,
+            expandable: false,
+            symbol: '...',
+          }}
+        >
+          {String(overview)}
+        </Paragraph>
         <Rate
           className="card-rate"
           count={10}
           value={rate}
           onChange={onChangeRate}
         />
-        <span>{cutText(overview, 100)}</span>
+        {/* <span>{cutText(overview, 100)}</span> */}
       </div>
     </>
   )
@@ -179,7 +188,8 @@ CardFilm.propTypes = {
 //   />
 //   {this.renderKeywords(genres)}
 //   <Rate disabled allowHalf count={10} value={voteAverage} />
-//   <Paragraph ellipsis={{ rows: 2, expandable: true, break_word: false, symbol: '...' }}>
+//   <Paragraph ellipsis={{ rows: 2, expandable: true,
+//   break_word: false, symbol: '...' }}>
 //     {String(overview)}
 //   </Paragraph>
 // </Card>
