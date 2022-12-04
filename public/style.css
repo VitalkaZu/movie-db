@@ -3,3 +3,7 @@ body {
   margin: 0;
   font-family: 'Inter', sans-serif;
 }
+
+.wrapper {
+  margin: 0 36px
+}

@@ -39,3 +39,12 @@
   flex-wrap: wrap;
   row-gap: 8px;
 }
+
+.card-poster {
+  width: 183px;
+
+}
+
+.card-poster-loaded {
+  object-fit: cover;
+}

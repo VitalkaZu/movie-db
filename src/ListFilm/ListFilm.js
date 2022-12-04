@@ -17,8 +17,6 @@ export default class ListFilm extends React.Component {
     this.state = {
       // filmList: null,
       // filmList: props.filmList,
-      currentPage: 1,
-      totalResults: null,
       error: false,
     }
   }
@@ -31,20 +29,20 @@ export default class ListFilm extends React.Component {
     // }))
   }
 
-  componentDidUpdate(prevProps) {
-    const { sendSearchName } = this.props
-    if (prevProps.sendSearchName !== sendSearchName) {
-      this.setState({ currentPage: 1 })
-      // this.downloadListFilm()
-    }
-  }
+  // componentDidUpdate(prevProps) {
+  //   const { sendSearchName } = this.props
+  //   if (prevProps.sendSearchName !== sendSearchName) {
+  //     this.setState({ currentPage: 1 })
+  //     // this.downloadListFilm()
+  //   }
+  // }
 
-  onChangePage = async (page) => {
-    await this.setState(() => ({
-      currentPage: page,
-    }))
-    // this.downloadListFilm()
-  }
+  // onChangePage = async (page) => {
+  //   await this.setState(() => ({
+  //     currentPage: page,
+  //   }))
+  //   // this.downloadListFilm()
+  // }
 
   // downloadListFilm() {
   //   const { currentPage } = this.state
@@ -104,14 +102,16 @@ export default class ListFilm extends React.Component {
   }
 
   render() {
-    const { currentPage, totalResults, error } = this.state
+    const { error } = this.state
+    const { totalResults, onChangePage, currentPage } = this.props
     console.log(error)
     return (
       <>
         <ul className="film-list">{this.renderFilms()}</ul>
         <Pagination
+          className="pagination"
           current={currentPage}
-          onChange={this.onChangePage}
+          onChange={onChangePage}
           pageSize={20}
           showSizeChanger={false}
           total={totalResults > 10000 ? 10000 : totalResults}
@@ -138,7 +138,8 @@ export default class ListFilm extends React.Component {
 // }
 
 // ListFilm.propTypes = {
-//   // eslint-disable-next-line react/require-default-props,react/forbid-prop-types
+//   // eslint-disable-next-line react/
+//   require-default-props,react/forbid-prop-types
 //   filmList: PropTypes.array,
 // }
 

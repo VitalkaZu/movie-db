@@ -32,35 +32,40 @@ export default class App extends React.Component {
       currentPage: 1,
       totalResults: null,
       // error: false,
-      functionLoadFilms: (page) => this.MovieService.getSearch('', page),
+      functionLoadFilms: (page) => {
+        const { sendSearchName } = this.state
+        console.log(sendSearchName)
+        return this.MovieService.getSearch(sendSearchName, page)
+      },
       guestSessionId: null,
-      ratedFilms: null,
       genresList: null,
     }
+    this.textInput = React.createRef()
   }
 
   componentDidMount() {
     this.createGuestSession()
     this.downloadGenresList()
     this.downloadListFilm()
+    this.textInput.current.focus()
   }
 
   componentDidUpdate(prevProps, prevState) {
-    const { functionLoadFilms, sendSearchName } = this.state
+    const { functionLoadFilms, sendSearchName, currentPage } = this.state
     if (
       prevState.functionLoadFilms !== functionLoadFilms ||
-      prevState.sendSearchName !== sendSearchName
+      prevState.currentPage !== currentPage
     ) {
       this.downloadListFilm()
     }
+    if (prevState.sendSearchName !== sendSearchName) {
+      if (sendSearchName) {
+        this.downloadSearchFilms()
+      } else {
+        this.downloadPopularFilms()
+      }
+    }
   }
-
-  // componentDidUpdate(prevProps, prevState) {
-  //   const { guestSessionId } = this.state
-  //   if (prevState.guestSessionId !== guestSessionId) {
-  //     // this.downloadRatedFimls()
-  //   }
-  // }
 
   onChangeSearch = (e) => {
     this.setState({
@@ -77,25 +82,52 @@ export default class App extends React.Component {
     // this.downloadListFilm()
   }
 
+  onChangePage = (page) => {
+    this.setState({ currentPage: page })
+  }
+
   onChangeTab = (keyTab) => {
     console.log(keyTab)
-    const { guestSessionId } = this.state
+    const { sendSearchName } = this.state
+
     if (keyTab === 'search') {
-      this.setState({
-        functionLoadFilms: (page) => {
-          const { sendSearchName } = this.state
-          console.log(sendSearchName)
-          return this.MovieService.getSearch(sendSearchName, page)
-        },
-      })
+      if (sendSearchName) {
+        this.downloadSearchFilms()
+      } else {
+        this.downloadPopularFilms()
+      }
     }
     if (keyTab === 'rated') {
-      this.setState({
-        functionLoadFilms: (page) =>
-          // eslint-disable-next-line implicit-arrow-linebreak
-          this.MovieService.getRatedMovies(guestSessionId, page),
-      })
+      this.downloadRatedFilms()
     }
+  }
+
+  downloadPopularFilms() {
+    this.setState({
+      currentPage: 1,
+      functionLoadFilms: (page) => this.MovieService.getPopular(page),
+    })
+  }
+
+  downloadSearchFilms() {
+    this.setState({
+      currentPage: 1,
+      functionLoadFilms: (page) => {
+        const { sendSearchName } = this.state
+        console.log(sendSearchName)
+        return this.MovieService.getSearch(sendSearchName, page)
+      },
+    })
+  }
+
+  downloadRatedFilms() {
+    const { guestSessionId } = this.state
+    this.setState({
+      currentPage: 1,
+      functionLoadFilms: (page) =>
+        // eslint-disable-next-line implicit-arrow-linebreak
+        this.MovieService.getRatedMovies(guestSessionId, page),
+    })
   }
 
   downloadGenresList() {
@@ -129,7 +161,6 @@ export default class App extends React.Component {
   downloadListFilm() {
     const { currentPage, functionLoadFilms } = this.state
     console.log(currentPage, functionLoadFilms)
-    // const { functionDownload } = this.props
     functionLoadFilms(currentPage)
       .then((listFilm) => {
         console.log(listFilm)
@@ -142,149 +173,55 @@ export default class App extends React.Component {
       .catch((e) => console.log(e))
   }
 
-  // eslint-disable-next-line class-methods-use-this,react/sort-comp
-  // debouncedDownloadListFilm = _debounce(this.downloadListFilm, 500)
-  // debounceOnChangeSearch() {
-  //   return debounce(this.onChangeSearch, 500)
-  // }
-
-  // downloadListFilm() {
-  //   const { searchName, currentPage } = this.state
-  //   if (searchName) {
-  //     // console.log(searchName)
-  //     this.MovieService.getSearch(searchName, currentPage)
-  //       .then((listFilm) => {
-  //         console.log(listFilm)
-  //         this.setState(() => ({
-  //           filmList: listFilm.results,
-  //           totalResults: listFilm.total_results,
-  //           error: false,
-  //         }))
-  //       })
-  //       .catch(() => this.setState({ error: true }))
-  //   } else {
-  //     this.MovieService.getPopular(currentPage)
-  //       .then((listFilm) => {
-  //         this.setState(() => ({
-  //           filmList: listFilm.results,
-  //           totalResults: listFilm.total_results,
-  //           error: false,
-  //         }))
-  //       })
-  //       .catch(() => this.setState({ error: true }))
-  //   }
-  // }
-
-  // downloadRatedFimls(guestSessionId) {
-  //   // const { guestSessionId } = this.state
-  //   this.MovieService.getRatedMovies(guestSessionId)
-  //     .then((listFilm) => {
-  //       console.log(listFilm)
-  //       this.setState(() => ({
-  //         ratedFilms: listFilm.results,
-  //       }))
-  //     })
-  //     .catch((e) => console.log(e))
-  // }
-
-  searchForm() {
-    const { searchName } = this.state
-    return (
-      <form onSubmit={this.onSubmitSearch}>
-        <Input
-          placeholder="Type to search..."
-          value={searchName}
-          onChange={this.onChangeSearch}
-        />
-      </form>
-    )
-  }
-
-  // ratedFilms() {
-  //   const { guestSessionId } = this.state
-  //   return <p>{guestSessionId}</p>
-  // }
-
-  // renderList() {
-  //   const {
-  //     // filmList,
-  //     // ratedFilms,
-  //     // currentPage,
-  //     // totalResults,
-  //     error,
-  //     // guestSessionId,
-  //   } = this.state
-  //   if (error) {
-  //     return <ErrorIndicator text="Film list not load" />
-  //   }
-  //   return (
-  //     <>
-  //       <ListFilm
-  //         functionDownload={this.MovieService.getPopular}
-  //         // filmList={filmList}
-  //         // ratedFilms={ratedFilms}
-  //         // guestSessionId={guestSessionId}
-  //       />
-  //       {/* <Pagination */}
-  //       {/*  current={currentPage} */}
-  //       {/*  onChange={this.onChangePage} */}
-  //       {/*  pageSize={20} */}
-  //       {/*  showSizeChanger={false} */}
-  //       {/*  total={totalResults > 10000 ? 10000 : totalResults} */}
-  //       {/* /> */}
-  //     </>
-  //   )
-  // }
-
   render() {
     const {
-      // searchName,
       filmList,
-      ratedFilms,
       guestSessionId,
       genresList,
+      searchName,
       sendSearchName,
       totalResults,
+      currentPage,
     } = this.state
-    // console.log(functionDownload)
+
     const items = [
       {
         label: 'Search',
         key: 'search',
         children: (
-          <>
-            {this.searchForm()}
-            {/* {this.renderList()} */}
+          <div className="wrapper">
+            <form onSubmit={this.onSubmitSearch}>
+              <Input
+                placeholder="Type to search..."
+                value={searchName}
+                onChange={this.onChangeSearch}
+                ref={this.textInput}
+              />
+            </form>
             <ListFilm
-              // functionDownload={(page) => {
-              //   this.MovieService.getSearch(sendSearchName, page)
-              // }}
               filmList={filmList}
               sendSearchName={sendSearchName}
-              // searchName={searchName}
-              ratedFilms={ratedFilms}
-              // filmList={filmList}
-              // ratedFilms={ratedFilms}
+              currentPage={currentPage}
+              onChangePage={this.onChangePage}
               totalResults={totalResults}
               guestSessionId={guestSessionId}
             />
-          </>
+          </div>
         ),
       },
       {
         label: 'Rated',
         key: 'rated',
         children: (
-          <ListFilm
-            // functionDownload={(page) => {
-            //   this.MovieService.getRatedMovies(guestSessionId, page)
-            // }}
-            // searchName={searchName}
-            filmList={filmList}
-            ratedFilms={ratedFilms}
-            guestSessionId={guestSessionId}
-            totalResults={totalResults}
-          />
+          <div className="wrapper">
+            <ListFilm
+              filmList={filmList}
+              guestSessionId={guestSessionId}
+              totalResults={totalResults}
+              currentPage={currentPage}
+              onChangePage={this.onChangePage}
+            />
+          </div>
         ),
       },
     ]
@@ -292,7 +229,7 @@ export default class App extends React.Component {
     return (
       <GenresContext.Provider value={genresList}>
         <div className="app">
-          <Tabs items={items} onChange={this.onChangeTab} />
+          <Tabs items={items} centered onChange={this.onChangeTab} />
         </div>
       </GenresContext.Provider>
     )

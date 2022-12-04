@@ -25,7 +25,9 @@ export default class MovieService {
   }
 
   getPopular = async (page) => {
-    const res = await this.getResource(`/movie/popular?${this._apiKey}&page=${page}`)
+    const res = await this.getResource(
+      `/movie/popular?${this._apiKey}&page=${page}`
+    )
     return res
   }
 
@@ -55,7 +57,9 @@ export default class MovieService {
   }
 
   createGuestSession = async () => {
-    const res = await this.getResource(`/authentication/guest_session/new?${this._apiKey}`)
+    const res = await this.getResource(
+      `/authentication/guest_session/new?${this._apiKey}`
+    )
     return res
   }
 
