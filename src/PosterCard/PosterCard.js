@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Space, Spin } from 'antd'
 import './PosterCard.css'
-// import PropTypes from 'prop-types'
+import PropTypes from 'prop-types'
 
 class PosterCard extends Component {
   constructor(props) {
@@ -55,6 +55,10 @@ class PosterCard extends Component {
   }
 }
 
-// PosterCard.propTypes = {}
+PosterCard.defaultProps = {
+  posterPath: null,
+}
+
+PosterCard.propTypes = { posterPath: PropTypes.string }
 
 export default PosterCard
