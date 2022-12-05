@@ -1,8 +1,9 @@
 import React from 'react'
-import { Input, Tabs } from 'antd'
+import { Input, Tabs, Spin, Space, Modal } from 'antd'
 // Input,
 // import { debounce } from 'lodash'
 import _debounce from 'lodash/debounce'
+import { Offline, Online } from 'react-detect-offline'
 import MovieService from '../MovieService'
 import ListFilm from '../ListFilm'
 import GenresContext from '../GenresContext'
@@ -31,6 +32,7 @@ export default class App extends React.Component {
       filmList: null,
       currentPage: 1,
       totalResults: null,
+      loading: false,
       // error: false,
       functionLoadFilms: (page) => {
         const { sendSearchName } = this.state
@@ -161,12 +163,16 @@ export default class App extends React.Component {
   downloadListFilm() {
     const { currentPage, functionLoadFilms } = this.state
     console.log(currentPage, functionLoadFilms)
+    this.setState({
+      loading: true,
+    })
     functionLoadFilms(currentPage)
       .then((listFilm) => {
         console.log(listFilm)
         this.setState(() => ({
           filmList: listFilm.results,
           totalResults: listFilm.total_results,
+          loading: false,
           // error: false,
         }))
       })
@@ -182,7 +188,25 @@ export default class App extends React.Component {
       sendSearchName,
       totalResults,
       currentPage,
+      loading,
     } = this.state
+
+    const films = !loading ? (
+      <ListFilm
+        filmList={filmList}
+        sendSearchName={sendSearchName}
+        currentPage={currentPage}
+        onChangePage={this.onChangePage}
+        totalResults={totalResults}
+        guestSessionId={guestSessionId}
+      />
+    ) : null
+
+    const spinner = loading ? (
+      <Space size="middle">
+        <Spin size="large" />
+      </Space>
+    ) : null
 
     const items = [
       {
@@ -198,14 +222,8 @@ export default class App extends React.Component {
                 ref={this.textInput}
               />
             </form>
-            <ListFilm
-              filmList={filmList}
-              sendSearchName={sendSearchName}
-              currentPage={currentPage}
-              onChangePage={this.onChangePage}
-              totalResults={totalResults}
-              guestSessionId={guestSessionId}
-            />
+            {spinner}
+            {films}
           </div>
         ),
       },
@@ -214,24 +232,38 @@ export default class App extends React.Component {
         key: 'rated',
         children: (
           <div className="wrapper">
-            <ListFilm
-              filmList={filmList}
-              guestSessionId={guestSessionId}
-              totalResults={totalResults}
-              currentPage={currentPage}
-              onChangePage={this.onChangePage}
-            />
+            {spinner}
+            {films}
           </div>
         ),
       },
     ]
 
+    const error = () => {
+      Modal.error({
+        title: 'Internet connection error',
+        content: 'Internet connection error',
+      })
+    }
+
+    const polling = {
+      enabled: true,
+      url: 'https://www.themoviedb.org/documentation/api',
+    }
+
     return (
-      <GenresContext.Provider value={genresList}>
-        <div className="app">
-          <Tabs items={items} centered onChange={this.onChangeTab} />
-        </div>
-      </GenresContext.Provider>
+      <>
+        <Online polling={polling}>
+          <GenresContext.Provider value={genresList}>
+            <div className="app">
+              <Tabs items={items} centered onChange={this.onChangeTab} />
+            </div>
+          </GenresContext.Provider>
+        </Online>
+        <Offline polling={polling} onChange={error}>
+          <p>Нет Интернета</p>
+        </Offline>
+      </>
     )
   }
 }

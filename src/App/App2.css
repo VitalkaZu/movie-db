@@ -4,3 +4,17 @@
   padding: 0;
   background-color: #ffffff;
 }
+
+.wrapper {
+  margin: 0 36px
+}
+
+@media screen and (max-width: 1010px) {
+  .app {
+    width: 420px;
+  }
+
+  .wrapper {
+    margin: 0 16px
+  }
+}
