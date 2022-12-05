@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import './CircleRate.css'
 
 function CircleRate({ percent }) {
@@ -23,3 +24,7 @@ export default CircleRate
 // От 3 до 5 - #E97E00
 // От 5 до 7 - #E9D100
 // Выше 7 - #66E900
+
+CircleRate.propTypes = {
+  percent: PropTypes.number.isRequired,
+}

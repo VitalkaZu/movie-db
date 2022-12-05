@@ -1,4 +1,5 @@
 import { Alert } from 'antd'
+import PropTypes from 'prop-types'
 import React from 'react'
 
 function ErrorIndicator({ text }) {
@@ -6,3 +7,7 @@ function ErrorIndicator({ text }) {
 }
 
 export default ErrorIndicator
+
+ErrorIndicator.propTypes = {
+  text: PropTypes.string.isRequired,
+}
