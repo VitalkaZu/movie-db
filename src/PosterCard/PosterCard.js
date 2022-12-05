@@ -25,7 +25,7 @@ class PosterCard extends Component {
       <img
         style={{ display: !loading ? 'flex' : 'none' }}
         onLoad={this.imageIsLoad}
-        className={`card-poster${posterPath ? ' card-poster-loaded' : ''}`}
+        className={`card--poster${posterPath ? ' card--poster_loaded' : ''}`}
         alt="Poster for film"
         // https://image.tmdb.org/t/p/w300_and_h450_bestv2
         src={
@@ -38,11 +38,11 @@ class PosterCard extends Component {
 
     const spinner = loading ? (
       <Space
-        className="card-poster"
+        className="card--poster"
         style={{ display: loading ? 'flex' : 'none' }}
         size="middle"
       >
-        <Spin className="card-spin" size="large" />
+        <Spin className="card--spin" size="large" />
       </Space>
     ) : null
 

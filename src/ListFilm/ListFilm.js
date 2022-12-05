@@ -1,33 +1,18 @@
 import React from 'react'
 import { Pagination, Space, Spin } from 'antd'
-// import PropTypes from 'prop-types'
+import PropTypes from 'prop-types'
 import CardFilm from '../CardFilm'
 import './ListFilm.css'
 
 export default class ListFilm extends React.Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      error: false,
-    }
-  }
-
-  componentDidMount() {
-    // this.downloadListFilm()
-    // const { filmList } = this.props
-    // this.setState(() => ({
-    //   filmList,
-    // }))
-  }
-
   // eslint-disable-next-line class-methods-use-this
   renderFilms = () => {
-    // const { filmList } = this.state
-    const { guestSessionId, filmList } = this.props
+    const { filmList, onChangeRate, ratedFilms } = this.props
+
     if (!filmList) {
       return (
-        <Space size="middle">
-          <Spin size="large" />
+        <Space className="film-list--spin" size="middle">
+          <Spin className="film-list--spin" size="large" />
         </Space>
       )
     }
@@ -36,16 +21,20 @@ export default class ListFilm extends React.Component {
         key={film.id}
         film={film}
         id={film.id}
-        guestSessionId={guestSessionId}
-        rate={film.rating}
+        // guestSessionId={guestSessionId}
+        onChangeRate={(rate) => onChangeRate(rate, film.id)}
+        rating={
+          Number(film.rating) ||
+          Number(ratedFilms.get(film.id)) ||
+          Number(localStorage.getItem(film.id)) ||
+          0
+        }
       />
     ))
   }
 
   render() {
-    const { error } = this.state
     const { totalResults, onChangePage, currentPage } = this.props
-    console.log(error)
     return (
       <>
         <ul className="film-list">{this.renderFilms()}</ul>
@@ -62,10 +51,19 @@ export default class ListFilm extends React.Component {
   }
 }
 
-// ListFilm.propTypes = {
-//   // eslint-disable-next-line react/
-//   require-default-props,react/forbid-prop-types
-//   filmList: PropTypes.array,
-// }
+ListFilm.defaultProps = {
+  filmList: null,
+  totalResults: 0,
+}
+
+ListFilm.propTypes = {
+  filmList: PropTypes.arrayOf(PropTypes.shape({})),
+  totalResults: PropTypes.number,
+  currentPage: PropTypes.number.isRequired,
+  onChangeRate: PropTypes.func.isRequired,
+  onChangePage: PropTypes.func.isRequired,
+  // eslint-disable-next-line react/forbid-prop-types
+  ratedFilms: PropTypes.any.isRequired,
+}
 
 // export default ListFilm

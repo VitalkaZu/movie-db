@@ -1,17 +1,12 @@
 import React from 'react'
 import { Input, Tabs, Spin, Space, Modal } from 'antd'
-// Input,
-// import { debounce } from 'lodash'
 import _debounce from 'lodash/debounce'
 import { Offline, Online } from 'react-detect-offline'
 import MovieService from '../MovieService'
 import ListFilm from '../ListFilm'
+import ErrorIndicator from '../ErrorIndicator'
 import GenresContext from '../GenresContext'
-// import ErrorIndicator from '../ErrorIndicator'
-// import { MovieServiceProvider } from '../MovieServiceContext'
-import './App2.css'
-
-// const GenresContext = React.createContext()
+import './App.css'
 
 export default class App extends React.Component {
   MovieService = new MovieService()
@@ -33,14 +28,11 @@ export default class App extends React.Component {
       currentPage: 1,
       totalResults: null,
       loading: false,
-      // error: false,
-      functionLoadFilms: (page) => {
-        const { sendSearchName } = this.state
-        console.log(sendSearchName)
-        return this.MovieService.getSearch(sendSearchName, page)
-      },
+      error: null,
+      functionLoadFilms: (page) => this.MovieService.getPopular(page),
       guestSessionId: null,
       genresList: null,
+      ratedFilms: new Map(),
     }
     this.textInput = React.createRef()
   }
@@ -72,7 +64,6 @@ export default class App extends React.Component {
   onChangeSearch = (e) => {
     this.setState({
       searchName: e.target.value,
-      // currentPage: 1,
     })
     this.debouncedSearchName()
   }
@@ -80,8 +71,6 @@ export default class App extends React.Component {
   // eslint-disable-next-line class-methods-use-this
   onSubmitSearch = (e) => {
     e.preventDefault()
-    // this.setState(() => ({ currentPage: 1 }))
-    // this.downloadListFilm()
   }
 
   onChangePage = (page) => {
@@ -102,6 +91,25 @@ export default class App extends React.Component {
     if (keyTab === 'rated') {
       this.downloadRatedFilms()
     }
+  }
+
+  onChangeRate = (rate, id) => {
+    const { guestSessionId } = this.state
+    this.MovieService.rateMovie(guestSessionId, id, rate)
+      .then((result) => {
+        // this.setState({ rate })
+        this.setState(({ ratedFilms }) => ({
+          ratedFilms: new Map(ratedFilms.set(id, rate)),
+        }))
+        localStorage.setItem(id, rate)
+        console.log(result)
+      })
+      .catch((e) => console.log(e))
+  }
+
+  onError(e) {
+    console.log(e.message)
+    this.setState({ error: e.message, loading: false })
   }
 
   downloadPopularFilms() {
@@ -143,16 +151,22 @@ export default class App extends React.Component {
       Date.parse(localStorage.getItem('expires_at')) < Date.now() ||
       !localStorage.getItem('expires_at')
     ) {
-      this.MovieService.createGuestSession()
-        .then((res) => {
-          this.setState({
-            guestSessionId: res.guest_session_id,
+      try {
+        this.MovieService.createGuestSession()
+          .then((res) => {
+            this.setState({
+              guestSessionId: res.guest_session_id,
+            })
+            localStorage.clear()
+            localStorage.setItem('guest_session_id', res.guest_session_id)
+            localStorage.setItem('expires_at', res.expires_at)
           })
-          localStorage.clear()
-          localStorage.setItem('guest_session_id', res.guest_session_id)
-          localStorage.setItem('expires_at', res.expires_at)
-        })
-        .catch((e) => console.log(e))
+          .catch((e) => {
+            this.onError(e)
+          })
+      } catch (e) {
+        this.onError(e)
+      }
     } else {
       this.setState({
         guestSessionId: localStorage.getItem('guest_session_id'),
@@ -166,17 +180,22 @@ export default class App extends React.Component {
     this.setState({
       loading: true,
     })
-    functionLoadFilms(currentPage)
-      .then((listFilm) => {
-        console.log(listFilm)
-        this.setState(() => ({
-          filmList: listFilm.results,
-          totalResults: listFilm.total_results,
-          loading: false,
-          // error: false,
-        }))
-      })
-      .catch((e) => console.log(e))
+    try {
+      functionLoadFilms(currentPage)
+        .then((listFilm) => {
+          console.log(listFilm)
+          this.setState(() => ({
+            filmList: listFilm.results,
+            totalResults: listFilm.total_results,
+            loading: false,
+          }))
+        })
+        .catch((e) => {
+          this.onError(e)
+        })
+    } catch (e) {
+      this.onError(e)
+    }
   }
 
   render() {
@@ -188,19 +207,27 @@ export default class App extends React.Component {
       sendSearchName,
       totalResults,
       currentPage,
+      ratedFilms,
       loading,
+      error,
     } = this.state
 
-    const films = !loading ? (
+    const hasData = !(loading || error)
+
+    const films = hasData ? (
       <ListFilm
         filmList={filmList}
         sendSearchName={sendSearchName}
         currentPage={currentPage}
         onChangePage={this.onChangePage}
+        onChangeRate={this.onChangeRate}
         totalResults={totalResults}
         guestSessionId={guestSessionId}
+        ratedFilms={ratedFilms}
       />
     ) : null
+
+    const errorIndicator = error ? <ErrorIndicator text={error} /> : null
 
     const spinner = loading ? (
       <Space size="middle">
@@ -222,6 +249,7 @@ export default class App extends React.Component {
                 ref={this.textInput}
               />
             </form>
+            {errorIndicator}
             {spinner}
             {films}
           </div>
@@ -232,6 +260,7 @@ export default class App extends React.Component {
         key: 'rated',
         children: (
           <div className="wrapper">
+            {errorIndicator}
             {spinner}
             {films}
           </div>
@@ -239,16 +268,23 @@ export default class App extends React.Component {
       },
     ]
 
-    const error = () => {
-      Modal.error({
-        title: 'Internet connection error',
-        content: 'Internet connection error',
-      })
+    const errorNetwork = (e) => {
+      Modal.destroyAll()
+      if (!e) {
+        Modal.error({
+          title: 'Internet connection error',
+          content: 'Internet connection error',
+        })
+      } else {
+        Modal.success({
+          content: 'Internet connection is OK',
+        })
+      }
     }
 
     const polling = {
       enabled: true,
-      url: 'https://www.themoviedb.org/documentation/api',
+      url: 'www.themoviedb.org/',
     }
 
     return (
@@ -260,9 +296,7 @@ export default class App extends React.Component {
             </div>
           </GenresContext.Provider>
         </Online>
-        <Offline polling={polling} onChange={error}>
-          <p>Нет Интернета</p>
-        </Offline>
+        <Offline polling={polling} onChange={errorNetwork} />
       </>
     )
   }
