@@ -1,10 +1,10 @@
 import { Tag, Rate, Space, Spin, Typography } from 'antd'
 import React from 'react'
 import PropTypes from 'prop-types'
-import ErrorIndicator from '../ErrorIndicator'
-import CircleRate from '../CircleRate'
+import ErrorIndicator from '../../UI/ErrorIndicator'
+import CircleRate from '../../UI/CircleRate'
 import PosterCard from '../PosterCard'
-import GenresContext from '../GenresContext'
+import GenresContext from '../../context/GenresContext'
 import './Card.css'
 
 const { Paragraph } = Typography

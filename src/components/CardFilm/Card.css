@@ -3,11 +3,11 @@
   grid-template-columns: minmax(12px, min-content) min-content 12px auto 12px;
   grid-template-rows: 12px min-content 12px auto 12px;
   grid-template-areas:
-    "poster poster . . ."
-    "poster poster . header ."
-    "poster poster . . ."
-    "poster poster . text ."
-    "poster poster . . .";
+    'poster poster . . .'
+    'poster poster . header .'
+    'poster poster . . .'
+    'poster poster . text .'
+    'poster poster . . .';
   width: 454px;
   height: 281px;
   box-shadow: 0px 4px 12px rgb(0 0 0 / 15%);
@@ -67,15 +67,14 @@
   grid-area: text;
 }
 
-
 @media screen and (max-width: 1010px) {
   .card {
     grid-template-areas:
-    ". . . . ."
-    ". poster . header ."
-    ". . . . ."
-    ". text text text ."
-    ". . . . .";
+      '. . . . .'
+      '. poster . header .'
+      '. . . . .'
+      '. text text text .'
+      '. . . . .';
     height: 245px;
   }
 

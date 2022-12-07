@@ -17,7 +17,7 @@
     "object-curly-newline": ["error", { "consistent": true }],
     "react/jsx-one-expression-per-line": "off",
     "comma-dangle": 0,
-    "prettier/prettier": ["error", {"endOfLine": "auto"}],
+    "prettier/prettier": ["error", { "endOfLine": "auto" }],
     "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
     "linebreak-style": [0, "unix"],
     "operator-linebreak": [
@@ -26,6 +26,6 @@
       { "overrides": { "?": "before", ":": "before" } }
     ],
     "no-underscore-dangle": 0
-//    "react/prop-types": 0
+    //    "react/prop-types": 0
   }
 }

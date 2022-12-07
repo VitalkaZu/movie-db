@@ -66,3 +66,5 @@ export default class MovieService {
     return res
   }
 }
+
+export const movieService = new MovieService()

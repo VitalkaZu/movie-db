@@ -2,15 +2,13 @@ import React from 'react'
 import { Input, Tabs, Spin, Space, Modal } from 'antd'
 import _debounce from 'lodash/debounce'
 import { Offline, Online } from 'react-detect-offline'
-import MovieService from '../MovieService'
+import movieService from '../../services/MovieService'
 import ListFilm from '../ListFilm'
-import ErrorIndicator from '../ErrorIndicator'
-import GenresContext from '../GenresContext'
+import ErrorIndicator from '../../UI/ErrorIndicator'
+import GenresContext from '../../context/GenresContext'
 import './App.css'
 
 export default class App extends React.Component {
-  MovieService = new MovieService()
-
   debouncedSearchName = _debounce(() => {
     const { searchName } = this.state
     console.log('Call debounce function')
@@ -29,7 +27,7 @@ export default class App extends React.Component {
       totalResults: null,
       loading: false,
       error: null,
-      functionLoadFilms: (page) => this.MovieService.getPopular(page),
+      // functionLoadFilms: (page) => movieService.getPopular(page),
       guestSessionId: null,
       genresList: null,
       ratedFilms: new Map(),
@@ -40,7 +38,7 @@ export default class App extends React.Component {
   componentDidMount() {
     this.createGuestSession()
     this.downloadGenresList()
-    this.downloadListFilm()
+    this.downloadListFilm((page) => movieService.getPopular(page))
     this.textInput.current.focus()
   }
 
@@ -78,7 +76,6 @@ export default class App extends React.Component {
   }
 
   onChangeTab = (keyTab) => {
-    console.log(keyTab)
     const { sendSearchName } = this.state
 
     if (keyTab === 'search') {
@@ -86,6 +83,7 @@ export default class App extends React.Component {
         this.downloadSearchFilms()
       } else {
         this.downloadPopularFilms()
+        // this.downloadListFilm((page) => getPopular(page))
       }
     }
     if (keyTab === 'rated') {
@@ -95,7 +93,8 @@ export default class App extends React.Component {
 
   onChangeRate = (rate, id) => {
     const { guestSessionId } = this.state
-    this.MovieService.rateMovie(guestSessionId, id, rate)
+    movieService
+      .rateMovie(guestSessionId, id, rate)
       .then((result) => {
         // this.setState({ rate })
         this.setState(({ ratedFilms }) => ({
@@ -115,33 +114,39 @@ export default class App extends React.Component {
   downloadPopularFilms() {
     this.setState({
       currentPage: 1,
-      functionLoadFilms: (page) => this.MovieService.getPopular(page),
+      // functionLoadFilms: (page) => movieService.getPopular(page),
     })
+    this.downloadListFilm((page) => movieService.getPopular(page))
   }
 
   downloadSearchFilms() {
     this.setState({
       currentPage: 1,
-      functionLoadFilms: (page) => {
-        const { sendSearchName } = this.state
-        console.log(sendSearchName)
-        return this.MovieService.getSearch(sendSearchName, page)
-      },
+      // functionLoadFilms: (page) => {
+      //   const { sendSearchName } = this.state
+      //   console.log(sendSearchName)
+      //   return movieService.getSearch(sendSearchName, page)
+      // },
     })
+    const { sendSearchName } = this.state
+    const { getSearch } = movieService
+    this.downloadListFilm((page) => getSearch(sendSearchName, page))
   }
 
   downloadRatedFilms() {
     const { guestSessionId } = this.state
     this.setState({
       currentPage: 1,
-      functionLoadFilms: (page) =>
-        // eslint-disable-next-line implicit-arrow-linebreak
-        this.MovieService.getRatedMovies(guestSessionId, page),
+      // functionLoadFilms: (page) =>
+      //   // eslint-disable-next-line implicit-arrow-linebreak
+      //   movieService.getRatedMovies(guestSessionId, page),
     })
+    const { getRatedMovies } = movieService
+    this.downloadListFilm((page) => getRatedMovies(guestSessionId, page))
   }
 
   downloadGenresList() {
-    this.MovieService.getMovieGenresList().then(({ genres }) => {
+    movieService.getMovieGenresList().then(({ genres }) => {
       this.setState({ genresList: genres })
     })
   }
@@ -152,7 +157,8 @@ export default class App extends React.Component {
       !localStorage.getItem('expires_at')
     ) {
       try {
-        this.MovieService.createGuestSession()
+        movieService
+          .createGuestSession()
           .then((res) => {
             this.setState({
               guestSessionId: res.guest_session_id,
@@ -174,8 +180,8 @@ export default class App extends React.Component {
     }
   }
 
-  downloadListFilm() {
-    const { currentPage, functionLoadFilms } = this.state
+  downloadListFilm(functionLoadFilms) {
+    const { currentPage } = this.state
     console.log(currentPage, functionLoadFilms)
     this.setState({
       loading: true,
@@ -283,8 +289,11 @@ export default class App extends React.Component {
     }
 
     const polling = {
-      enabled: true,
-      url: 'www.themoviedb.org/',
+      enabled: false,
+      // до этого отправлял запросы на муви, что бы понять проходят ли запросы.
+      // А то интрент может быть включен, но из-за блокровки сервис не доступен
+      // enabled: true,
+      // url: 'www.themoviedb.org/',
     }
 
     return (
