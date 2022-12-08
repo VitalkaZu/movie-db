@@ -5,23 +5,6 @@ import CardFilm from '../CardFilm'
 import './ListFilm.css'
 
 export default class ListFilm extends React.Component {
-  // componentDidMount() {
-  //   const { functionLoad } = this.props
-  //   console.log('mount')
-  //   functionLoad()
-  // }
-
-  componentDidUpdate(prevProps) {
-    const { currentPage, functionLoad, sendSearchName } = this.props
-    if (
-      prevProps.currentPage !== currentPage ||
-      prevProps.sendSearchName !== sendSearchName
-    ) {
-      console.log('update')
-      functionLoad()
-    }
-  }
-
   // eslint-disable-next-line class-methods-use-this
   renderFilms = () => {
     const { filmList, onChangeRate, ratedFilms } = this.props
@@ -71,7 +54,7 @@ export default class ListFilm extends React.Component {
 ListFilm.defaultProps = {
   filmList: null,
   totalResults: 0,
-  sendSearchName: null,
+  // sendSearchName: null,
 }
 
 ListFilm.propTypes = {
@@ -82,8 +65,8 @@ ListFilm.propTypes = {
   onChangePage: PropTypes.func.isRequired,
   // eslint-disable-next-line react/forbid-prop-types
   ratedFilms: PropTypes.any.isRequired,
-  functionLoad: PropTypes.func.isRequired,
-  sendSearchName: PropTypes.string,
+  // functionLoad: PropTypes.func.isRequired,
+  // sendSearchName: PropTypes.string,
 }
 
 // export default ListFilm

@@ -11,10 +11,8 @@ import './App.css'
 export default class App extends React.Component {
   debouncedSearchName = _debounce(() => {
     const { searchName } = this.state
-    console.log('Call debounce function')
     this.setState({
       sendSearchName: searchName,
-      currentPage: 1,
     })
   }, 1000)
 
@@ -28,7 +26,7 @@ export default class App extends React.Component {
       totalResults: null,
       loading: false,
       error: null,
-      // functionLoadFilms: (page) => movieService.getPopular(page),
+      currentTab: 'search',
       guestSessionId: null,
       genresList: null,
       ratedFilms: new Map(),
@@ -40,26 +38,35 @@ export default class App extends React.Component {
     this.createGuestSession()
     this.downloadGenresList()
     this.downloadFilms()
-    // this.downloadListFilm((page) => movieService.getPopular(page))
     this.textInput.current.focus()
   }
 
-  // componentDidUpdate(prevProps, prevState) {
-  //   const { functionLoadFilms, sendSearchName, currentPage } = this.state
-  //   if (
-  //     prevState.functionLoadFilms !== functionLoadFilms ||
-  //     prevState.currentPage !== currentPage
-  //   ) {
-  //     this.downloadListFilm()
-  //   }
-  //   if (prevState.sendSearchName !== sendSearchName) {
-  //     if (sendSearchName) {
-  //       this.downloadSearchFilms()
-  //     } else {
-  //       this.downloadPopularFilms()
-  //     }
-  //   }
-  // }
+  componentDidUpdate(prevProps, prevState) {
+    const { currentTab, sendSearchName, currentPage } = this.state
+    if (prevState.sendSearchName !== sendSearchName) {
+      this.setState({
+        currentPage: 1,
+      })
+      this.downloadFilms()
+    }
+    if (prevState.currentTab !== currentTab) {
+      this.setState({
+        currentPage: 1,
+      })
+      if (currentTab === 'search') {
+        this.downloadFilms()
+      } else {
+        this.downloadRatedFilms()
+      }
+    }
+    if (prevState.currentPage !== currentPage) {
+      if (currentTab === 'search') {
+        this.downloadFilms()
+      } else {
+        this.downloadRatedFilms()
+      }
+    }
+  }
 
   onChangeSearch = (e) => {
     this.setState({
@@ -78,76 +85,51 @@ export default class App extends React.Component {
   }
 
   onChangeTab = (keyTab) => {
-    if (keyTab === 'search') {
-      this.downloadFilms()
-    }
-    if (keyTab === 'rated') {
-      this.downloadRatedFilms()
-    }
+    this.setState({
+      currentTab: keyTab,
+    })
+    // if (keyTab === 'search') {
+    //   this.downloadFilms()
+    // }
+    // if (keyTab === 'rated') {
+    //   this.downloadRatedFilms()
+    // }
   }
 
   onChangeRate = (rate, id) => {
     const { guestSessionId } = this.state
     movieService
       .rateMovie(guestSessionId, id, rate)
-      .then((result) => {
+      .then(() => {
         // this.setState({ rate })
         this.setState(({ ratedFilms }) => ({
           ratedFilms: new Map(ratedFilms.set(id, rate)),
         }))
         localStorage.setItem(id, rate)
-        console.log(result)
       })
-      .catch((e) => console.log(e))
+      .catch((e) => {
+        this.onError(e)
+      })
   }
 
   onError(e) {
-    console.log(e.message)
     this.setState({ error: e.message, loading: false })
   }
 
-  // downloadPopularFilms = () => {
-  //   this.setState({
-  //     currentPage: 1,
-  //     // functionLoadFilms: (page) => movieService.getPopular(page),
-  //   })
-  //   this.downloadListFilm((page) => movieService.getPopular(page))
-  // }
-
-  // downloadSearchFilms = () => {
-  //   this.setState({
-  //     currentPage: 1,
-  //     // functionLoadFilms: (page) => {
-  //     //   const { sendSearchName } = this.state
-  //     //   console.log(sendSearchName)
-  //     //   return movieService.getSearch(sendSearchName, page)
-  //     // },
-  //   })
-  //   const { sendSearchName } = this.state
-  //   const { getSearch } = movieService
-  //   this.downloadListFilm((page) => getSearch(sendSearchName, page))
-  // }
-
   downloadFilms = () => {
-    const { sendSearchName } = this.state
+    const { sendSearchName, currentPage } = this.state
     const { getSearch, getPopular } = movieService
     if (sendSearchName) {
-      this.downloadListFilm((page) => getSearch(sendSearchName, page))
+      this.downloadListFilm(() => getSearch(sendSearchName, currentPage))
     } else {
-      this.downloadListFilm((page) => getPopular(page))
+      this.downloadListFilm(() => getPopular(currentPage))
     }
   }
 
   downloadRatedFilms = () => {
-    const { guestSessionId } = this.state
-    // this.setState({
-    //   currentPage: 1,
-    //   // functionLoadFilms: (page) =>
-    //   //   // eslint-disable-next-line implicit-arrow-linebreak
-    //   //   movieService.getRatedMovies(guestSessionId, page),
-    // })
+    const { guestSessionId, currentPage } = this.state
     const { getRatedMovies } = movieService
-    this.downloadListFilm((page) => getRatedMovies(guestSessionId, page))
+    this.downloadListFilm(() => getRatedMovies(guestSessionId, currentPage))
   }
 
   downloadGenresList() {
@@ -186,15 +168,12 @@ export default class App extends React.Component {
   }
 
   downloadListFilm(functionLoadFilms) {
-    const { currentPage } = this.state
-    console.log(currentPage, functionLoadFilms)
     this.setState({
       loading: true,
     })
     try {
-      functionLoadFilms(currentPage)
+      functionLoadFilms()
         .then((listFilm) => {
-          console.log(listFilm)
           this.setState(() => ({
             filmList: listFilm.results,
             totalResults: listFilm.total_results,
@@ -225,19 +204,19 @@ export default class App extends React.Component {
 
     const hasData = !(loading || error)
 
-    // const films = hasData ? (
-    //   <ListFilm
-    //     filmList={filmList}
-    //     sendSearchName={sendSearchName}
-    //     currentPage={currentPage}
-    //     onChangePage={this.onChangePage}
-    //     onChangeRate={this.onChangeRate}
-    //     totalResults={totalResults}
-    //     guestSessionId={guestSessionId}
-    //     ratedFilms={ratedFilms}
-    //     functionLoad={}
-    //   />
-    // ) : null
+    const films = hasData ? (
+      <ListFilm
+        filmList={filmList}
+        sendSearchName={sendSearchName}
+        currentPage={currentPage}
+        onChangePage={this.onChangePage}
+        onChangeRate={this.onChangeRate}
+        totalResults={totalResults}
+        guestSessionId={guestSessionId}
+        ratedFilms={ratedFilms}
+        // functionLoad={}
+      />
+    ) : null
 
     const errorIndicator = error ? <ErrorIndicator text={error} /> : null
 
@@ -263,19 +242,7 @@ export default class App extends React.Component {
             </form>
             {errorIndicator}
             {spinner}
-            {hasData ? (
-              <ListFilm
-                filmList={filmList}
-                sendSearchName={sendSearchName}
-                currentPage={currentPage}
-                onChangePage={this.onChangePage}
-                onChangeRate={this.onChangeRate}
-                totalResults={totalResults}
-                guestSessionId={guestSessionId}
-                ratedFilms={ratedFilms}
-                functionLoad={this.downloadFilms}
-              />
-            ) : null}
+            {films}
           </div>
         ),
       },
@@ -286,18 +253,7 @@ export default class App extends React.Component {
           <div className="wrapper">
             {errorIndicator}
             {spinner}
-            {hasData ? (
-              <ListFilm
-                filmList={filmList}
-                currentPage={currentPage}
-                onChangePage={this.onChangePage}
-                onChangeRate={this.onChangeRate}
-                totalResults={totalResults}
-                guestSessionId={guestSessionId}
-                ratedFilms={ratedFilms}
-                functionLoad={this.downloadRatedFilms}
-              />
-            ) : null}
+            {films}
           </div>
         ),
       },
@@ -333,7 +289,7 @@ export default class App extends React.Component {
               <Tabs
                 items={items}
                 centered
-                destroyInactiveTabPane
+                // destroyInactiveTabPane
                 onChange={this.onChangeTab}
               />
             </div>

@@ -20,14 +20,70 @@ export default class CardFilm extends React.Component {
     }
   }
 
+  // eslint-disable-next-line class-methods-use-this
+  renderGenres = (arrGenres, genres) => {
+    if (genres && arrGenres) {
+      return genres.map((genreID) => {
+        const genreObj = arrGenres.find(({ id }) => id === genreID)
+        return <Tag key={genreObj.id}>{genreObj.name}</Tag>
+      })
+    }
+    return null
+  }
+
   render() {
     const { loading, error } = this.state
     const { film, rating, onChangeRate } = this.props
+    const {
+      title,
+      release_date: releaseDate,
+      poster_path: posterPath,
+      genre_ids: genres,
+      vote_average: voteAverage,
+      overview,
+    } = film
     const hasData = !(loading || error)
     const errorMessage = error ? <ErrorIndicator text="Film not load" /> : null
-    const spinner = loading ? <RenderSpiner /> : null
+    const spinner = loading ? (
+      <Space size="middle">
+        <Spin size="large" />
+      </Space>
+    ) : null
     const content = hasData ? (
-      <FilmView film={film} rating={rating} onChangeRate={onChangeRate} />
+      <>
+        <PosterCard posterPath={posterPath} />
+        <div className="card--header ">
+          <span className="card--title">
+            <span className="card--title-text">{title}</span>
+            <CircleRate percent={voteAverage} />
+          </span>
+          <span className="card--date">{releaseDate}</span>
+          <GenresContext.Consumer>
+            {(arrGenres) => (
+              <div className="card--genres">
+                {this.renderGenres(arrGenres, genres)}
+              </div>
+            )}
+          </GenresContext.Consumer>
+        </div>
+        <div className="card--description">
+          <Paragraph
+            ellipsis={{
+              rows: 4,
+              expandable: false,
+              symbol: '...',
+            }}
+          >
+            {String(overview)}
+          </Paragraph>
+          <Rate
+            className="card--rate"
+            count={10}
+            value={rating}
+            onChange={onChangeRate}
+          />
+        </div>
+      </>
     ) : null
 
     return (
@@ -40,72 +96,6 @@ export default class CardFilm extends React.Component {
   }
 }
 
-function RenderSpiner() {
-  return (
-    <Space size="middle">
-      <Spin size="large" />
-    </Space>
-  )
-}
-
-function renderGenres(arrGenres, genres) {
-  if (genres && arrGenres) {
-    return genres.map((genreID) => {
-      const genreObj = arrGenres.find(({ id }) => id === genreID)
-      return <Tag key={genreObj.id}>{genreObj.name}</Tag>
-    })
-  }
-  return null
-}
-
-function FilmView({ film, onChangeRate, rating }) {
-  const {
-    title,
-    release_date: releaseDate,
-    poster_path: posterPath,
-    genre_ids: genres,
-    vote_average: voteAverage,
-    overview,
-  } = film
-
-  return (
-    <>
-      <PosterCard posterPath={posterPath} />
-      <div className="card--header ">
-        <span className="card--title">
-          <span className="card--title-text">{title}</span>
-          <CircleRate percent={voteAverage} />
-        </span>
-        <span className="card--date">{releaseDate}</span>
-        <GenresContext.Consumer>
-          {(arrGenres) => (
-            <div className="card--genres">
-              {renderGenres(arrGenres, genres)}
-            </div>
-          )}
-        </GenresContext.Consumer>
-      </div>
-      <div className="card--description">
-        <Paragraph
-          ellipsis={{
-            rows: 4,
-            expandable: false,
-            symbol: '...',
-          }}
-        >
-          {String(overview)}
-        </Paragraph>
-        <Rate
-          className="card--rate"
-          count={10}
-          value={rating}
-          onChange={onChangeRate}
-        />
-      </div>
-    </>
-  )
-}
-
 CardFilm.contextType = GenresContext
 
 CardFilm.defaultProps = {
@@ -113,16 +103,6 @@ CardFilm.defaultProps = {
 }
 
 CardFilm.propTypes = {
-  film: PropTypes.shape({}).isRequired,
-  onChangeRate: PropTypes.func.isRequired,
-  rating: PropTypes.number,
-}
-
-FilmView.defaultProps = {
-  rating: 0,
-}
-
-FilmView.propTypes = {
   film: PropTypes.shape({
     title: PropTypes.string.isRequired,
     release_date: PropTypes.string.isRequired,
@@ -134,3 +114,20 @@ FilmView.propTypes = {
   onChangeRate: PropTypes.func.isRequired,
   rating: PropTypes.number,
 }
+
+// FilmView.defaultProps = {
+//   rating: 0,
+// }
+//
+// FilmView.propTypes = {
+//   film: PropTypes.shape({
+//     title: PropTypes.string.isRequired,
+//     release_date: PropTypes.string.isRequired,
+//     poster_path: PropTypes.string,
+//     genre_ids: PropTypes.arrayOf(PropTypes.number).isRequired,
+//     vote_average: PropTypes.number.isRequired,
+//     overview: PropTypes.string,
+//   }).isRequired,
+//   onChangeRate: PropTypes.func.isRequired,
+//   rating: PropTypes.number,
+// }

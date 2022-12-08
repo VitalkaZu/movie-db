@@ -4,7 +4,7 @@ export default class MovieService {
   _apiKey = 'api_key=a5bc79536e94cb8671d55c4b9eabb5f9'
 
   async getResource(url) {
-    console.log('zapros', `${this._baseUrl}${url}`)
+    // console.log('zapros', `${this._baseUrl}${url}`)
     const res = await fetch(`${this._baseUrl}${url}`)
     if (!res.ok) {
       throw new Error(`Error ${url}, status ${res.status}`)
@@ -62,7 +62,7 @@ export default class MovieService {
     const res = await this.getResource(
       `/guest_session/${guestSessionId}/rated/movies?${this._apiKey}&language=en-US&sort_by=created_at.asc&page=${page}`
     )
-    console.log(res.results)
+    // console.log(res.results)
     return res
   }
 }
