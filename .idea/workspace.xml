@@ -2,19 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="77da0a62-e6cf-4802-9d24-b4a9ccc89001" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/PosterCard/PosterCard.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/PosterCard/PosterCard.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/PosterCard/index.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/ListFilm/RenderFilms.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/style.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/App/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/App/App.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/App/App2.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/App/App2.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CardFilm/Card.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/CardFilm/Card.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CardFilm/CardFilm.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/CardFilm/CardFilm.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ListFilm/ListFilm.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/ListFilm/ListFilm.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ListFilm/ListFilm.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/ListFilm/ListFilm.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/App/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/App/App.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/ListFilm/ListFilm.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ListFilm/ListFilm.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -25,8 +16,8 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="SCSS File" />
-        <option value="JavaScript File" />
         <option value="CSS File" />
+        <option value="JavaScript File" />
       </list>
     </option>
   </component>
@@ -47,7 +38,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
     "js.linters.configure.manually.selectedeslint": "true",
-    "last_opened_file_path": "/Users/annazukova/Documents/GitHub/movie-db",
+    "last_opened_file_path": "D:/KATA/movie-db",
     "list.type.of.created.stylesheet": "CSS",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.standard": "true",
@@ -79,6 +70,7 @@
       <workItem from="1669853372809" duration="21256000" />
       <workItem from="1669977422193" duration="2496000" />
       <workItem from="1670038736246" duration="17897000" />
+      <workItem from="1670456576261" duration="17912000" />
     </task>
     <servers />
   </component>
