@@ -11,8 +11,8 @@ export default class ListFilm extends React.Component {
 
     if (!filmList) {
       return (
-        <Space className="film-list--spin" size="middle">
-          <Spin className="film-list--spin" size="large" />
+        <Space className="film-list__spin" size="middle">
+          <Spin className="film-list__spin" size="large" />
         </Space>
       )
     }

@@ -52,21 +52,21 @@ export default class CardFilm extends React.Component {
     const content = hasData ? (
       <>
         <PosterCard posterPath={posterPath} />
-        <div className="card--header ">
-          <span className="card--title">
-            <span className="card--title-text">{title}</span>
+        <div className="card__header ">
+          <span className="card__title">
+            <span className="card__title-text">{title}</span>
             <CircleRate percent={voteAverage} />
           </span>
-          <span className="card--date">{releaseDate}</span>
+          <span className="card__date">{releaseDate}</span>
           <GenresContext.Consumer>
             {(arrGenres) => (
-              <div className="card--genres">
+              <div className="card__genres">
                 {this.renderGenres(arrGenres, genres)}
               </div>
             )}
           </GenresContext.Consumer>
         </div>
-        <div className="card--description">
+        <div className="card__description">
           <Paragraph
             ellipsis={{
               rows: 4,
@@ -77,7 +77,7 @@ export default class CardFilm extends React.Component {
             {String(overview)}
           </Paragraph>
           <Rate
-            className="card--rate"
+            className="card__rate"
             count={10}
             value={rating}
             onChange={onChangeRate}
@@ -114,20 +114,3 @@ CardFilm.propTypes = {
   onChangeRate: PropTypes.func.isRequired,
   rating: PropTypes.number,
 }
-
-// FilmView.defaultProps = {
-//   rating: 0,
-// }
-//
-// FilmView.propTypes = {
-//   film: PropTypes.shape({
-//     title: PropTypes.string.isRequired,
-//     release_date: PropTypes.string.isRequired,
-//     poster_path: PropTypes.string,
-//     genre_ids: PropTypes.arrayOf(PropTypes.number).isRequired,
-//     vote_average: PropTypes.number.isRequired,
-//     overview: PropTypes.string,
-//   }).isRequired,
-//   onChangeRate: PropTypes.func.isRequired,
-//   rating: PropTypes.number,
-// }
